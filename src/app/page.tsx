@@ -1,6 +1,7 @@
 import Header from "@/features/navigation/components/header/Header";
 import { SembleAnalytics } from "@/features/stats/lib/analytics";
 import {
+  CombinedActivityChart,
   DailyActiveUsersChart,
   RecordsCreatedChart,
   TotalRecordsBarChart,
@@ -320,6 +321,8 @@ async function RecentActivitySection() {
       <Title order={2} size="h3">
         Activity Overview
       </Title>
+
+      <CombinedActivityChart dailyActivity={yearlyActivity} />
 
       <Stack gap={0}>
         <Title order={3} size="h4">
