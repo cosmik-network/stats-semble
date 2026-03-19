@@ -117,29 +117,43 @@ export function TotalUsersGrowthChart({
   dailyActivity,
   totalUsers,
 }: TotalUsersGrowthChartProps) {
-  // Calculate cumulative user growth by using daily active users as a proxy
-  // We'll accumulate based on the proportion of new activity each day
+  // Estimate cumulative user growth by distributing the all-time total
+  // proportionally across daily active user counts — this is an approximation,
+  // not real registration data.
   const totalActivity = dailyActivity.reduce(
     (sum, day) => sum + day.activeUsers,
     0,
   );
 
-  let accumulatedActivity = 0;
-  const chartData = dailyActivity.map((day) => {
-    accumulatedActivity += day.activeUsers;
+  const chartData = dailyActivity.reduce<
+    Array<{
+      date: string;
+      totalUsers: number;
+      activeUsers: number;
+    }>
+  >((acc, day) => {
+    const accumulatedActivity =
+      acc.length > 0
+        ? (acc[acc.length - 1].totalUsers * totalActivity) / totalUsers +
+          day.activeUsers
+        : day.activeUsers;
+
     // Estimate cumulative users as a proportion of total users based on accumulated activity
     const estimatedCumulative = Math.round(
       (accumulatedActivity / totalActivity) * totalUsers,
     );
-    return {
+
+    acc.push({
       date: new Date(day.date).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       }),
       totalUsers: estimatedCumulative,
       activeUsers: day.activeUsers,
-    };
-  });
+    });
+
+    return acc;
+  }, []);
 
   return (
     <Paper p="md" radius="lg" withBorder>
@@ -152,7 +166,7 @@ export function TotalUsersGrowthChart({
             {totalUsers.toLocaleString()}
           </Text>
           <Text size="xs" c="dimmed">
-            All time
+            All time · chart shows estimated cumulative growth
           </Text>
         </div>
         <LineChart
@@ -161,7 +175,11 @@ export function TotalUsersGrowthChart({
           data={chartData}
           dataKey="date"
           series={[
-            { name: "totalUsers", color: "teal.6", label: "Total Users" },
+            {
+              name: "totalUsers",
+              color: "teal.6",
+              label: "Est. Cumulative Users",
+            },
             { name: "activeUsers", color: "blue.6", label: "Active Users" },
           ]}
           curveType="monotone"
@@ -181,6 +199,7 @@ export function RecordsCreatedChart({ dailyActivity }: ActivityChartsProps) {
     }),
     cards: day.cards.created,
     collections: day.collections.created,
+    follows: day.follows.created,
   }));
 
   return (
@@ -197,6 +216,7 @@ export function RecordsCreatedChart({ dailyActivity }: ActivityChartsProps) {
           series={[
             { name: "cards", color: "cyan.6", label: "Cards" },
             { name: "collections", color: "violet.6", label: "Collections" },
+            { name: "follows", color: "orange.6", label: "Follows" },
           ]}
           curveType="monotone"
           withDots={false}
@@ -217,7 +237,8 @@ export function CombinedActivityChart({ dailyActivity }: ActivityChartsProps) {
     users: day.activeUsers,
     cards: day.cards.created,
     collections: day.collections.created,
-    total: day.cards.created + day.collections.created,
+    follows: day.follows.created,
+    total: day.cards.created + day.collections.created + day.follows.created,
   }));
 
   return (
@@ -239,6 +260,7 @@ export function CombinedActivityChart({ dailyActivity }: ActivityChartsProps) {
               color: "violet",
               label: "Collections Created",
             },
+            { name: "follows", color: "orange", label: "Follows Created" },
           ]}
           curveType="monotone"
           withDots={false}

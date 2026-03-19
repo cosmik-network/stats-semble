@@ -23,30 +23,40 @@ export class SembleAnalytics {
     until?: string,
   ): Promise<AnalyticsResult> {
     const stats = await this.client.fetchCollectionStats(
-      ["network.cosmik.card", "network.cosmik.collection"],
+      [
+        "network.cosmik.card",
+        "network.cosmik.collection",
+        "network.cosmik.follow",
+      ],
       since,
       until,
     );
 
     const cardStats = stats["network.cosmik.card"];
     const collectionStats = stats["network.cosmik.collection"];
+    const followStats = stats["network.cosmik.follow"];
 
-    // Use the maximum dids_estimate across both types
-    // Note: This is an estimate - the same user may have created both cards and collections
+    // Use the maximum dids_estimate across all types
+    // Note: This is an estimate - the same user may have created cards, collections, and follows
     const uniqueUsersEstimate = Math.max(
       cardStats?.dids_estimate || 0,
       collectionStats?.dids_estimate || 0,
+      followStats?.dids_estimate || 0,
     );
 
     return {
       uniqueUsersEstimate,
       totalRecordsCreated:
-        (cardStats?.creates || 0) + (collectionStats?.creates || 0),
+        (cardStats?.creates || 0) +
+        (collectionStats?.creates || 0) +
+        (followStats?.creates || 0),
       totalRecordsActive:
         (cardStats?.creates || 0) -
         (cardStats?.deletes || 0) +
         (collectionStats?.creates || 0) -
-        (collectionStats?.deletes || 0),
+        (collectionStats?.deletes || 0) +
+        (followStats?.creates || 0) -
+        (followStats?.deletes || 0),
       recordsByType: {
         cards: {
           created: cardStats?.creates || 0,
@@ -60,6 +70,12 @@ export class SembleAnalytics {
           deleted: collectionStats?.deletes || 0,
           active:
             (collectionStats?.creates || 0) - (collectionStats?.deletes || 0),
+        },
+        follows: {
+          created: followStats?.creates || 0,
+          updated: followStats?.updates || 0,
+          deleted: followStats?.deletes || 0,
+          active: (followStats?.creates || 0) - (followStats?.deletes || 0),
         },
       },
     };
@@ -96,6 +112,12 @@ export class SembleAnalytics {
       deleted: number;
       active: number;
     };
+    follows: {
+      created: number;
+      updated: number;
+      deleted: number;
+      active: number;
+    };
   }> {
     const analytics = await this.getAnalytics(since, until);
     return analytics.recordsByType;
@@ -111,15 +133,18 @@ export class SembleAnalytics {
     since?: string,
     until?: string,
   ): Promise<DailyMetrics[]> {
-    // Fetch timeseries for both cards and collections
-    const [cardTimeseries, collectionTimeseries] = await Promise.all([
-      this.client.fetchTimeseries("network.cosmik.card", since, until),
-      this.client.fetchTimeseries("network.cosmik.collection", since, until),
-    ]);
+    // Fetch timeseries for cards, collections, and follows
+    const [cardTimeseries, collectionTimeseries, followTimeseries] =
+      await Promise.all([
+        this.client.fetchTimeseries("network.cosmik.card", since, until),
+        this.client.fetchTimeseries("network.cosmik.collection", since, until),
+        this.client.fetchTimeseries("network.cosmik.follow", since, until),
+      ]);
 
     const cardData = cardTimeseries.series["network.cosmik.card"] || [];
     const collectionData =
       collectionTimeseries.series["network.cosmik.collection"] || [];
+    const followData = followTimeseries.series["network.cosmik.follow"] || [];
 
     // Combine data by date
     return cardTimeseries.range.map((date, index) => {
@@ -135,10 +160,20 @@ export class SembleAnalytics {
         deletes: 0,
         dids_estimate: 0,
       };
+      const follow = followData[index] || {
+        creates: 0,
+        updates: 0,
+        deletes: 0,
+        dids_estimate: 0,
+      };
 
       return {
         date,
-        activeUsers: Math.max(card.dids_estimate, collection.dids_estimate),
+        activeUsers: Math.max(
+          card.dids_estimate,
+          collection.dids_estimate,
+          follow.dids_estimate,
+        ),
         cards: {
           created: card.creates,
           updated: card.updates,
@@ -148,6 +183,11 @@ export class SembleAnalytics {
           created: collection.creates,
           updated: collection.updates,
           deleted: collection.deletes,
+        },
+        follows: {
+          created: follow.creates,
+          updated: follow.updates,
+          deleted: follow.deletes,
         },
       };
     });
@@ -166,18 +206,24 @@ export class SembleAnalytics {
     const until = now.toISOString();
 
     const stats = await this.client.fetchCollectionStats(
-      ["network.cosmik.card", "network.cosmik.collection"],
+      [
+        "network.cosmik.card",
+        "network.cosmik.collection",
+        "network.cosmik.follow",
+      ],
       since,
       until,
     );
 
     const cardStats = stats["network.cosmik.card"];
     const collectionStats = stats["network.cosmik.collection"];
+    const followStats = stats["network.cosmik.follow"];
 
-    // Return the maximum estimate (users may have created both types)
+    // Return the maximum estimate (users may have created cards, collections, and follows)
     return Math.max(
       cardStats?.dids_estimate || 0,
       collectionStats?.dids_estimate || 0,
+      followStats?.dids_estimate || 0,
     );
   }
 
@@ -194,18 +240,24 @@ export class SembleAnalytics {
     const until = now.toISOString();
 
     const stats = await this.client.fetchCollectionStats(
-      ["network.cosmik.card", "network.cosmik.collection"],
+      [
+        "network.cosmik.card",
+        "network.cosmik.collection",
+        "network.cosmik.follow",
+      ],
       since,
       until,
     );
 
     const cardStats = stats["network.cosmik.card"];
     const collectionStats = stats["network.cosmik.collection"];
+    const followStats = stats["network.cosmik.follow"];
 
-    // Return the maximum estimate (users may have created both types)
+    // Return the maximum estimate (users may have created cards, collections, and follows)
     return Math.max(
       cardStats?.dids_estimate || 0,
       collectionStats?.dids_estimate || 0,
+      followStats?.dids_estimate || 0,
     );
   }
 
@@ -218,16 +270,22 @@ export class SembleAnalytics {
     startOfToday.setHours(0, 0, 0, 0);
 
     const stats = await this.client.fetchCollectionStats(
-      ["network.cosmik.card", "network.cosmik.collection"],
+      [
+        "network.cosmik.card",
+        "network.cosmik.collection",
+        "network.cosmik.follow",
+      ],
       startOfToday.toISOString(),
     );
 
     const cardStats = stats["network.cosmik.card"];
     const collectionStats = stats["network.cosmik.collection"];
+    const followStats = stats["network.cosmik.follow"];
 
     return Math.max(
       cardStats?.dids_estimate || 0,
       collectionStats?.dids_estimate || 0,
+      followStats?.dids_estimate || 0,
     );
   }
 }

@@ -135,6 +135,10 @@ async function RecordsByTypeSection() {
     (sum, day) => sum + day.collections.created,
     0,
   );
+  const recentFollowsCreated = recentActivity.reduce(
+    (sum, day) => sum + day.follows.created,
+    0,
+  );
 
   return (
     <Stack gap="md">
@@ -245,6 +249,58 @@ async function RecordsByTypeSection() {
             </Stack>
           </Paper>
         </GridCol>
+
+        <GridCol span={{ base: 12, md: 6 }}>
+          <Paper p="md" radius={"lg"} withBorder>
+            <Stack gap="md">
+              <Text size="lg" fw={600}>
+                Follows
+              </Text>
+              <Grid>
+                <GridCol span={6}>
+                  <Stack gap={4}>
+                    <Text size="xs" c="dimmed" tt="uppercase">
+                      Active
+                    </Text>
+                    <Text size="lg" fw={700}>
+                      {overallStats.recordsByType.follows.active.toLocaleString()}
+                    </Text>
+                  </Stack>
+                </GridCol>
+                <GridCol span={6}>
+                  <Stack gap={4}>
+                    <Text size="xs" c="dimmed" tt="uppercase">
+                      Created (7d)
+                    </Text>
+                    <Text size="lg" fw={700}>
+                      {recentFollowsCreated.toLocaleString()}
+                    </Text>
+                  </Stack>
+                </GridCol>
+                <GridCol span={6}>
+                  <Stack gap={4}>
+                    <Text size="xs" c="dimmed">
+                      All-time created
+                    </Text>
+                    <Text size="sm">
+                      {overallStats.recordsByType.follows.created.toLocaleString()}
+                    </Text>
+                  </Stack>
+                </GridCol>
+                <GridCol span={6}>
+                  <Stack gap={4}>
+                    <Text size="xs" c="dimmed">
+                      All-time updated
+                    </Text>
+                    <Text size="sm">
+                      {overallStats.recordsByType.follows.updated.toLocaleString()}
+                    </Text>
+                  </Stack>
+                </GridCol>
+              </Grid>
+            </Stack>
+          </Paper>
+        </GridCol>
       </Grid>
 
       <RecordsCreatedChart dailyActivity={dailyActivity} />
@@ -281,6 +337,7 @@ async function RecentActivitySection() {
               <TableTh>Active Users</TableTh>
               <TableTh>Cards Created</TableTh>
               <TableTh>Collections Created</TableTh>
+              <TableTh>Follows Created</TableTh>
             </TableTr>
           </TableThead>
           <TableTbody>
@@ -317,6 +374,17 @@ async function RecentActivitySection() {
                       <Text span size="xs" c="dimmed">
                         {" "}
                         ({day.collections.updated})
+                      </Text>
+                    )}
+                  </Text>
+                </TableTd>
+                <TableTd>
+                  <Text size="sm">
+                    +{day.follows.created}
+                    {day.follows.updated > 0 && (
+                      <Text span size="xs" c="dimmed">
+                        {" "}
+                        ({day.follows.updated})
                       </Text>
                     )}
                   </Text>
