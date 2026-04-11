@@ -7,6 +7,11 @@ import {
   TotalRecordsBarChart,
   TotalUsersGrowthChart,
 } from "@/features/stats/components/ActivityCharts";
+import { ActivityChart } from "@/features/stats/components/ActivityChart";
+import { BreakdownCharts } from "@/features/stats/components/BreakdownCharts";
+import { EngagementOverviewChart } from "@/features/stats/components/EngagementOverviewChart";
+import { GrowthChart } from "@/features/stats/components/GrowthChart";
+import { StatsClient } from "@/features/stats/lib/stats-dal";
 import {
   Container,
   Grid,
@@ -78,6 +83,30 @@ async function getHistoricalDailyActivity() {
     startDate.toISOString(),
     now.toISOString(),
   );
+}
+
+async function getGrowthStats() {
+  "use cache";
+  const client = new StatsClient();
+  return client.getGrowth("day", 30);
+}
+
+async function getEngagementStats() {
+  "use cache";
+  const client = new StatsClient();
+  return client.getEngagement();
+}
+
+async function getActivityStats() {
+  "use cache";
+  const client = new StatsClient();
+  return client.getActivity("day", 30);
+}
+
+async function getBreakdownStats() {
+  "use cache";
+  const client = new StatsClient();
+  return client.getBreakdown("day", 30);
 }
 
 // Component sections
@@ -401,6 +430,26 @@ async function RecentActivitySection() {
   );
 }
 
+async function StatsGrowthSection() {
+  const growthData = await getGrowthStats();
+  return <GrowthChart data={growthData} />;
+}
+
+async function StatsEngagementSection() {
+  const engagementData = await getEngagementStats();
+  return <EngagementOverviewChart data={engagementData} />;
+}
+
+async function StatsActivitySection() {
+  const activityData = await getActivityStats();
+  return <ActivityChart data={activityData} />;
+}
+
+async function StatsBreakdownSection() {
+  const breakdownData = await getBreakdownStats();
+  return <BreakdownCharts data={breakdownData} />;
+}
+
 function LoadingState() {
   return (
     <Paper p="md" radius={"lg"} withBorder>
@@ -429,6 +478,31 @@ export default async function Home() {
 
         <Suspense fallback={<LoadingState />}>
           <RecentActivitySection />
+        </Suspense>
+
+        <Title order={2} size="h3">
+          Semble Stats API
+        </Title>
+
+        <Grid>
+          <GridCol span={{ base: 12, md: 6 }}>
+            <Suspense fallback={<LoadingState />}>
+              <StatsGrowthSection />
+            </Suspense>
+          </GridCol>
+          <GridCol span={{ base: 12, md: 6 }}>
+            <Suspense fallback={<LoadingState />}>
+              <StatsEngagementSection />
+            </Suspense>
+          </GridCol>
+        </Grid>
+
+        <Suspense fallback={<LoadingState />}>
+          <StatsActivitySection />
+        </Suspense>
+
+        <Suspense fallback={<LoadingState />}>
+          <StatsBreakdownSection />
         </Suspense>
       </Stack>
     </Container>
