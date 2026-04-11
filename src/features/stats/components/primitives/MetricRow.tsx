@@ -16,13 +16,16 @@ export function MetricRow({
   color,
   barFraction,
 }: MetricRowProps) {
+  const hasBar = barFraction !== undefined;
   return (
-    <div className={styles.metricRow}>
+    <div
+      className={`${styles.metricRow} ${hasBar ? styles.metricRowWithBar : ""}`}
+    >
       <div className={styles.metricLeft}>
         {color && <span className={styles.dot} style={{ background: color }} />}
         <span className={styles.metricLabel}>{label}</span>
       </div>
-      {barFraction !== undefined && (
+      {hasBar && (
         <div className={styles.metricBar}>
           <div
             className={styles.metricBarFill}

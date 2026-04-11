@@ -46,7 +46,7 @@ export function EngagementOverviewChart({
       value: data.usersWithContributions,
       color: CATEGORY_COLORS.contributions,
     },
-  ];
+  ].sort((a, b) => b.value - a.value);
 
   const maxRow = rows.reduce((m, r) => (r.value > m ? r.value : m), 0);
 

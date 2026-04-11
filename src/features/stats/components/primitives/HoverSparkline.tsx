@@ -5,6 +5,7 @@ import styles from "./primitives.module.css";
 import {
   computeGeometry,
   linePoints,
+  niceTicks,
   polygonPoints,
   projectPoints,
   seriesMax,
@@ -35,7 +36,9 @@ export function HoverSparkline({
   } | null>(null);
 
   const geom = computeGeometry(width, height);
-  const max = seriesMax(series);
+  const rawMax = seriesMax(series);
+  const { ticks, niceMax } = niceTicks(rawMax);
+  const max = niceMax;
   const n = Math.max(...series.map((s) => s.points.length), 0);
 
   const handleMove = useCallback(
@@ -66,6 +69,16 @@ export function HoverSparkline({
 
   return (
     <div className={styles.sparkWrap} ref={wrapRef}>
+      <div
+        className={styles.yAxis}
+        aria-hidden="true"
+        style={{ height }}
+      >
+        {[...ticks].reverse().map((t, i) => (
+          <span key={i}>{formatValue(t)}</span>
+        ))}
+      </div>
+      <div className={styles.sparkBody}>
       <svg
         viewBox={`0 0 ${width} ${height}`}
         preserveAspectRatio="none"
@@ -131,21 +144,22 @@ export function HoverSparkline({
           </>
         )}
       </svg>
-      <div
-        className={styles.tooltip}
-        style={{
-          opacity: hover ? 1 : 0,
-          left: hover ? `${hover.x * 100}%` : 0,
-          transform: "translateX(-50%)",
-        }}
-      >
-        {tooltipLabel}
-        {tooltipValues && (
-          <>
-            {" · "}
-            {tooltipValues}
-          </>
-        )}
+        <div
+          className={styles.tooltip}
+          style={{
+            opacity: hover ? 1 : 0,
+            left: hover ? `${hover.x * 100}%` : 0,
+            transform: "translateX(-50%)",
+          }}
+        >
+          {tooltipLabel}
+          {tooltipValues && (
+            <>
+              {" · "}
+              {tooltipValues}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

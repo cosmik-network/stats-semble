@@ -50,7 +50,7 @@ export function ActivityChart({ data }: ActivityChartProps) {
       value: data.totals.followsCreated,
       color: CATEGORY_COLORS.follows,
     },
-  ];
+  ].sort((a, b) => b.value - a.value);
   const maxRow = rows.reduce((m, r) => (r.value > m ? r.value : m), 0);
 
   return (

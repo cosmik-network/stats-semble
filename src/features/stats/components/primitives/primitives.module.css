@@ -86,6 +86,12 @@
   border-bottom: 1px solid var(--border);
   font-size: 12px;
 }
+.metricRowWithBar {
+  display: grid;
+  grid-template-columns: minmax(0, 140px) minmax(40px, 1fr) 80px;
+  align-items: center;
+  gap: 12px;
+}
 .metricRow:last-child {
   border-bottom: none;
 }
@@ -95,6 +101,9 @@
   gap: 8px;
   min-width: 0;
   flex: 1;
+}
+.metricRowWithBar .metricLeft {
+  flex: none;
 }
 .metricLabel {
   color: var(--text);
@@ -106,6 +115,9 @@
   color: var(--text-hi);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+.metricRowWithBar .metricValue {
+  text-align: right;
 }
 .metricSecondary {
   color: var(--text-dim);
@@ -119,6 +131,9 @@
   border-radius: 1px;
   margin: 0 10px;
   min-width: 20px;
+}
+.metricRowWithBar .metricBar {
+  margin: 0;
 }
 .metricBarFill {
   height: 100%;
@@ -191,11 +206,32 @@
   position: relative;
   width: 100%;
   line-height: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+.sparkBody {
+  position: relative;
+  flex: 1;
+  min-width: 0;
 }
 .sparkWrap svg {
   display: block;
   width: 100%;
   height: auto;
+}
+.yAxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+  padding: 2px 0;
+  min-width: 24px;
+  flex-shrink: 0;
 }
 .tooltip {
   position: absolute;

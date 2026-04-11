@@ -60,6 +60,27 @@ export function seriesMax(series: SparkSeries[]): number {
   return m;
 }
 
+function niceStep(raw: number): number {
+  if (raw <= 0) return 1;
+  const pow = Math.pow(10, Math.floor(Math.log10(raw)));
+  const norm = raw / pow;
+  let step: number;
+  if (norm < 1.5) step = 1;
+  else if (norm < 3) step = 2;
+  else if (norm < 7) step = 5;
+  else step = 10;
+  return step * pow;
+}
+
+export function niceTicks(max: number, count = 4): { ticks: number[]; niceMax: number } {
+  if (max <= 0) return { ticks: [0], niceMax: 1 };
+  const step = niceStep(max / count);
+  const niceMax = Math.ceil(max / step) * step;
+  const ticks: number[] = [];
+  for (let v = 0; v <= niceMax + step / 2; v += step) ticks.push(v);
+  return { ticks, niceMax };
+}
+
 export function polygonPoints(
   projected: { x: number; y: number }[],
   geom: SparkGeometry,
