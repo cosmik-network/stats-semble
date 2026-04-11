@@ -1,4 +1,4 @@
-import Header from "@/features/navigation/components/header/Header";
+import DashboardTabs from "@/features/navigation/components/dashboard-tabs/DashboardTabs";
 import { SembleAnalytics } from "@/features/stats/lib/analytics";
 import { ActivityChart } from "@/features/stats/components/ActivityChart";
 import {
@@ -362,59 +362,54 @@ function LoadingState({ label = "loading" }: { label?: string }) {
   );
 }
 
-interface PageProps {
-  searchParams: Promise<{ tab?: string }>;
-}
+export default async function Home() {
+  const ufoContent = (
+    <>
+      <Suspense fallback={<LoadingState />}>
+        <OverallTotalsSection />
+      </Suspense>
 
-export default async function Home({ searchParams }: PageProps) {
-  const params = await searchParams;
-  const tab: "ufo" | "db" = params.tab === "ufo" ? "ufo" : "db";
+      <Suspense fallback={<LoadingState />}>
+        <OverallStatsSection />
+      </Suspense>
+
+      <Suspense fallback={<LoadingState />}>
+        <ActiveUsersSection />
+      </Suspense>
+
+      <Suspense fallback={<LoadingState />}>
+        <RecordsByTypeSection />
+      </Suspense>
+
+      <Suspense fallback={<LoadingState />}>
+        <RecentActivitySection />
+      </Suspense>
+    </>
+  );
+
+  const dbContent = (
+    <>
+      <Suspense fallback={<LoadingState />}>
+        <StatsGrowthSection />
+      </Suspense>
+
+      <Suspense fallback={<LoadingState />}>
+        <StatsEngagementSection />
+      </Suspense>
+
+      <Suspense fallback={<LoadingState />}>
+        <StatsActivitySection />
+      </Suspense>
+
+      <Suspense fallback={<LoadingState />}>
+        <StatsBreakdownSection />
+      </Suspense>
+    </>
+  );
 
   return (
     <main className="term-root">
-      <Header activeTab={tab} />
-
-      {tab === "ufo" ? (
-        <>
-          <Suspense fallback={<LoadingState />}>
-            <OverallTotalsSection />
-          </Suspense>
-
-          <Suspense fallback={<LoadingState />}>
-            <OverallStatsSection />
-          </Suspense>
-
-          <Suspense fallback={<LoadingState />}>
-            <ActiveUsersSection />
-          </Suspense>
-
-          <Suspense fallback={<LoadingState />}>
-            <RecordsByTypeSection />
-          </Suspense>
-
-          <Suspense fallback={<LoadingState />}>
-            <RecentActivitySection />
-          </Suspense>
-        </>
-      ) : (
-        <>
-          <Suspense fallback={<LoadingState />}>
-            <StatsGrowthSection />
-          </Suspense>
-
-          <Suspense fallback={<LoadingState />}>
-            <StatsEngagementSection />
-          </Suspense>
-
-          <Suspense fallback={<LoadingState />}>
-            <StatsActivitySection />
-          </Suspense>
-
-          <Suspense fallback={<LoadingState />}>
-            <StatsBreakdownSection />
-          </Suspense>
-        </>
-      )}
+      <DashboardTabs ufoContent={ufoContent} dbContent={dbContent} />
     </main>
   );
 }
