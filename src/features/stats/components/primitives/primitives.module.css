@@ -328,6 +328,31 @@
   border-color: var(--border-2);
 }
 
+.miniTabs {
+  display: flex;
+  gap: 2px;
+}
+.miniTab {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-mid);
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.miniTab:hover {
+  color: var(--text-hi);
+  border-color: var(--border-2);
+}
+.miniTabActive {
+  color: var(--text-hi);
+  background: var(--surface-2);
+  border-color: var(--border-2);
+}
+
 /* ==== Utility ==== */
 .dim {
   color: var(--text-dim);

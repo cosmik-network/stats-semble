@@ -87,7 +87,7 @@ async function getGrowthStats() {
   "use cache";
   cacheLife("minutes");
   const client = new StatsClient();
-  return client.getGrowth("day", 30);
+  return client.getGrowth("day", 90);
 }
 
 async function getEngagementStats() {
