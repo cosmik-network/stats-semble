@@ -63,9 +63,11 @@ export function HoverSparkline({
     hover !== null
       ? series
           .filter((s) => s.points[hover.idx] !== undefined)
-          .map((s) => formatValue(s.points[hover.idx].y))
-          .join(" · ")
-      : "";
+          .map((s) => ({
+            color: s.color,
+            text: formatValue(s.points[hover.idx].y),
+          }))
+      : [];
 
   return (
     <div className={styles.sparkWrap} ref={wrapRef}>
@@ -153,12 +155,12 @@ export function HoverSparkline({
           }}
         >
           {tooltipLabel}
-          {tooltipValues && (
-            <>
+          {tooltipValues.map((v, i) => (
+            <span key={i}>
               {" · "}
-              {tooltipValues}
-            </>
-          )}
+              <span style={{ color: v.color }}>{v.text}</span>
+            </span>
+          ))}
         </div>
       </div>
     </div>
