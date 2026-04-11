@@ -1,7 +1,8 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useSyncExternalStore, useTransition } from "react";
 import styles from "@/features/stats/components/primitives/primitives.module.css";
+import { revalidateDashboard } from "@/features/navigation/actions";
 
 interface Props {
   timestamp: string;
@@ -33,26 +34,43 @@ function formatRelative(diffMs: number): string {
 }
 
 export default function LastUpdated({ timestamp }: Props) {
+  const [pending, startTransition] = useTransition();
   const nowSeconds = useSyncExternalStore(
     subscribe,
     getSnapshot,
     getServerSnapshot,
   );
 
-  const label =
+  const relative =
     nowSeconds === null
+      ? null
+      : formatRelative(nowSeconds * 1000 - new Date(timestamp).getTime());
+  const label = pending
+    ? "refreshing…"
+    : relative === null
       ? "updated"
-      : `updated ${formatRelative(nowSeconds * 1000 - new Date(timestamp).getTime())}`;
+      : `updated ${relative}`;
   const absolute = new Date(timestamp).toLocaleString();
 
   return (
-    <div
+    <button
+      type="button"
       className={styles.liveIndicator}
       aria-live="polite"
-      title={`last updated ${absolute}`}
+      aria-label={`refresh data, last updated ${absolute}`}
+      title={`click to refresh · last updated ${absolute}`}
+      disabled={pending}
+      onClick={() =>
+        startTransition(async () => {
+          await revalidateDashboard();
+        })
+      }
     >
-      <span className={styles.liveDot} aria-hidden />
+      <span
+        className={`${styles.liveDot} ${pending ? styles.liveDotBusy : ""}`}
+        aria-hidden
+      />
       <span>{label}</span>
-    </div>
+    </button>
   );
 }
