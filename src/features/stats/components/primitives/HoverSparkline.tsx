@@ -100,7 +100,7 @@ export function HoverSparkline({
         onMouseLeave={handleLeave}
         role="img"
         aria-label={ariaLabel}
-        style={{ cursor: "crosshair" }}
+        style={{ cursor: "crosshair", height }}
       >
         {series.map((s, si) => {
           if (max <= 0 || s.points.length === 0) return null;

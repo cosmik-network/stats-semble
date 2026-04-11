@@ -218,7 +218,6 @@
 .sparkWrap svg {
   display: block;
   width: 100%;
-  height: auto;
 }
 .yAxis {
   display: flex;
