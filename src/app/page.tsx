@@ -111,6 +111,12 @@ async function getBreakdownStats() {
   return client.getBreakdown("day", 30);
 }
 
+async function getFetchedAt() {
+  "use cache";
+  cacheLife("minutes");
+  return new Date().toISOString();
+}
+
 function shortDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", {
     month: "short",
@@ -363,6 +369,8 @@ function LoadingState({ label = "loading" }: { label?: string }) {
 }
 
 export default async function Home() {
+  const lastUpdated = await getFetchedAt();
+
   const ufoContent = (
     <>
       <Suspense fallback={<LoadingState />}>
@@ -409,7 +417,11 @@ export default async function Home() {
 
   return (
     <main className="term-root">
-      <DashboardTabs ufoContent={ufoContent} dbContent={dbContent} />
+      <DashboardTabs
+        ufoContent={ufoContent}
+        dbContent={dbContent}
+        lastUpdated={lastUpdated}
+      />
     </main>
   );
 }

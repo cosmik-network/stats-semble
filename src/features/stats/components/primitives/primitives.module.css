@@ -318,6 +318,46 @@
     align-items: center;
     gap: 10px;
 }
+.headerTitleGroup {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* ==== Live indicator ==== */
+.liveIndicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+}
+.liveDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-hi, var(--accent));
+    animation: liveDotPulse 2s ease-in-out infinite;
+}
+@keyframes liveDotPulse {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.35;
+        transform: scale(0.8);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .liveDot {
+        animation: none;
+    }
+}
 .headerTitle {
     font-size: 14px;
     color: var(--text-hi);
