@@ -362,46 +362,59 @@ function LoadingState({ label = "loading" }: { label?: string }) {
   );
 }
 
-export default function Home() {
+interface PageProps {
+  searchParams: Promise<{ tab?: string }>;
+}
+
+export default async function Home({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const tab: "ufo" | "db" = params.tab === "ufo" ? "ufo" : "db";
+
   return (
     <main className="term-root">
-      <Header />
+      <Header activeTab={tab} />
 
-      <Suspense fallback={<LoadingState />}>
-        <OverallTotalsSection />
-      </Suspense>
+      {tab === "ufo" ? (
+        <>
+          <Suspense fallback={<LoadingState />}>
+            <OverallTotalsSection />
+          </Suspense>
 
-      <Suspense fallback={<LoadingState />}>
-        <OverallStatsSection />
-      </Suspense>
+          <Suspense fallback={<LoadingState />}>
+            <OverallStatsSection />
+          </Suspense>
 
-      <Suspense fallback={<LoadingState />}>
-        <ActiveUsersSection />
-      </Suspense>
+          <Suspense fallback={<LoadingState />}>
+            <ActiveUsersSection />
+          </Suspense>
 
-      <Suspense fallback={<LoadingState />}>
-        <RecordsByTypeSection />
-      </Suspense>
+          <Suspense fallback={<LoadingState />}>
+            <RecordsByTypeSection />
+          </Suspense>
 
-      <Suspense fallback={<LoadingState />}>
-        <StatsGrowthSection />
-      </Suspense>
+          <Suspense fallback={<LoadingState />}>
+            <RecentActivitySection />
+          </Suspense>
+        </>
+      ) : (
+        <>
+          <Suspense fallback={<LoadingState />}>
+            <StatsGrowthSection />
+          </Suspense>
 
-      <Suspense fallback={<LoadingState />}>
-        <StatsEngagementSection />
-      </Suspense>
+          <Suspense fallback={<LoadingState />}>
+            <StatsEngagementSection />
+          </Suspense>
 
-      <Suspense fallback={<LoadingState />}>
-        <StatsActivitySection />
-      </Suspense>
+          <Suspense fallback={<LoadingState />}>
+            <StatsActivitySection />
+          </Suspense>
 
-      <Suspense fallback={<LoadingState />}>
-        <StatsBreakdownSection />
-      </Suspense>
-
-      <Suspense fallback={<LoadingState />}>
-        <RecentActivitySection />
-      </Suspense>
+          <Suspense fallback={<LoadingState />}>
+            <StatsBreakdownSection />
+          </Suspense>
+        </>
+      )}
     </main>
   );
 }

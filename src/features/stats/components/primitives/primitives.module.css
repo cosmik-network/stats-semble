@@ -268,6 +268,28 @@
   font-size: 11px;
   color: var(--text-mid);
 }
+.tabs {
+  display: flex;
+  gap: 2px;
+}
+.tab {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-mid);
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+}
+.tab:hover {
+  color: var(--text-hi);
+  border-color: var(--border-2);
+}
+.tabActive {
+  color: var(--text-hi);
+  background: var(--surface-2);
+  border-color: var(--border-2);
+}
 
 /* ==== Utility ==== */
 .dim {
