@@ -101,7 +101,7 @@ async function getActivityStats() {
   "use cache";
   cacheLife("minutes");
   const client = new StatsClient();
-  return client.getActivity("day", 30);
+  return client.getActivity("day", 90);
 }
 
 async function getBreakdownStats() {
