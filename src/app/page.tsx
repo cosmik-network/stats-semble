@@ -28,16 +28,19 @@ import {
   Title,
 } from "@mantine/core";
 import { Suspense } from "react";
+import { cacheLife } from "next/cache";
 
 // Cached data fetching functions
 async function getOverallAnalytics() {
   "use cache";
+  cacheLife("minutes");
   const analytics = new SembleAnalytics();
   return analytics.getAnalytics();
 }
 
 async function getActiveUserMetrics() {
   "use cache";
+  cacheLife("minutes");
   const analytics = new SembleAnalytics();
   const [dau, wau, mau] = await Promise.all([
     analytics.getCurrentDAU(),
@@ -49,6 +52,7 @@ async function getActiveUserMetrics() {
 
 async function getDailyActivity() {
   "use cache";
+  cacheLife("minutes");
   const analytics = new SembleAnalytics();
   const now = new Date();
   const thirtyDaysAgo = new Date(now);
@@ -62,6 +66,7 @@ async function getDailyActivity() {
 
 async function getYearlyDailyActivity() {
   "use cache";
+  cacheLife("minutes");
   const analytics = new SembleAnalytics();
   const now = new Date();
   const eightMonthsAgo = new Date(now);
@@ -75,6 +80,7 @@ async function getYearlyDailyActivity() {
 
 async function getHistoricalDailyActivity() {
   "use cache";
+  cacheLife("minutes");
   const analytics = new SembleAnalytics();
   const now = new Date();
   const startDate = new Date("2025-11-03T00:00:00Z");
@@ -87,24 +93,28 @@ async function getHistoricalDailyActivity() {
 
 async function getGrowthStats() {
   "use cache";
+  cacheLife("minutes");
   const client = new StatsClient();
   return client.getGrowth("day", 30);
 }
 
 async function getEngagementStats() {
   "use cache";
+  cacheLife("minutes");
   const client = new StatsClient();
   return client.getEngagement();
 }
 
 async function getActivityStats() {
   "use cache";
+  cacheLife("minutes");
   const client = new StatsClient();
   return client.getActivity("day", 30);
 }
 
 async function getBreakdownStats() {
   "use cache";
+  cacheLife("minutes");
   const client = new StatsClient();
   return client.getBreakdown("day", 30);
 }
