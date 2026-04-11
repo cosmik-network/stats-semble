@@ -63,9 +63,10 @@ export function BreakdownCharts({ data }: BreakdownChartsProps) {
           <div key={group.title}>
             <SectionHeading
               title={group.title}
+              color={group.color}
               right={
                 <span
-                  style={{ fontSize: 11, color: "var(--text-hi)" }}
+                  style={{ fontSize: 11, color: group.color }}
                   className="mono"
                 >
                   {group.total.toLocaleString()}

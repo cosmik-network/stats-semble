@@ -215,11 +215,12 @@ async function RecordsByTypeSection() {
           <div key={t.name}>
             <SectionHeading
               title={t.name}
+              color={t.color}
               right={
                 <span
                   style={{
                     fontSize: 11,
-                    color: "var(--text-hi)",
+                    color: t.color,
                     fontVariantNumeric: "tabular-nums",
                   }}
                 >
