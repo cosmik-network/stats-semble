@@ -1,391 +1,391 @@
 /* ==== Card ==== */
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 .cardHeader {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
 }
 .cardTitle {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-mid);
-  font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: peachpuff;
+    font-weight: 500;
 }
 .cardSubtitle {
-  font-size: 10px;
-  color: var(--text-dim);
+    font-size: 10px;
+    color: var(--text-dim);
 }
 
 /* ==== Section heading ==== */
 .section {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 8px;
-  padding: 0 2px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+    padding: 0 2px;
 }
 .sectionTitle {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-mid);
-  font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-mid);
+    font-weight: 500;
 }
 
 /* ==== StatCell ==== */
 .statRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 28px;
 }
 .stat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
 }
 .statLabel {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-mid);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-mid);
 }
 .statValue {
-  font-size: 22px;
-  line-height: 1.1;
-  font-weight: 500;
-  color: var(--text-hi);
-  font-variant-numeric: tabular-nums;
+    font-size: 22px;
+    line-height: 1.1;
+    font-weight: 500;
+    color: var(--text-hi);
+    font-variant-numeric: tabular-nums;
 }
 .statDelta {
-  font-size: 11px;
-  color: var(--accent);
+    font-size: 11px;
+    color: var(--accent);
 }
 .statDeltaDim {
-  font-size: 11px;
-  color: var(--text-dim);
+    font-size: 11px;
+    color: var(--text-dim);
 }
 
 /* ==== MetricRow ==== */
 .metricRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 0;
-  gap: 12px;
-  border-bottom: 1px solid var(--border);
-  font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
 }
 .metricRowWithBar {
-  display: grid;
-  grid-template-columns: minmax(0, 140px) minmax(40px, 1fr) 80px;
-  align-items: center;
-  gap: 12px;
+    display: grid;
+    grid-template-columns: minmax(0, 140px) minmax(40px, 1fr) 80px;
+    align-items: center;
+    gap: 12px;
 }
 .metricRow:last-child {
-  border-bottom: none;
+    border-bottom: none;
 }
 .metricLeft {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
 }
 .metricRowWithBar .metricLeft {
-  flex: none;
+    flex: none;
 }
 .metricLabel {
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .metricValue {
-  color: var(--text-hi);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+    color: var(--text-hi);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
 }
 .metricRowWithBar .metricValue {
-  text-align: right;
+    text-align: right;
 }
 .metricSecondary {
-  color: var(--text-dim);
-  font-size: 11px;
-  margin-left: 4px;
+    color: var(--text-dim);
+    font-size: 11px;
+    margin-left: 4px;
 }
 .metricBar {
-  flex: 1;
-  height: 2px;
-  background: var(--surface-2);
-  border-radius: 1px;
-  margin: 0 10px;
-  min-width: 20px;
+    flex: 1;
+    height: 2px;
+    background: var(--surface-2);
+    border-radius: 1px;
+    margin: 0 10px;
+    min-width: 20px;
 }
 .metricRowWithBar .metricBar {
-  margin: 0;
+    margin: 0;
 }
 .metricBarFill {
-  height: 100%;
-  background: var(--accent);
+    height: 100%;
+    background: var(--accent);
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
 }
 
 /* ==== StackedBarRow ==== */
 .stackedRow {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 .stackedBar {
-  display: flex;
-  width: 100%;
-  height: 8px;
-  background: var(--surface-2);
-  overflow: hidden;
+    display: flex;
+    width: 100%;
+    height: 8px;
+    background: var(--surface-2);
+    overflow: hidden;
 }
 .stackedSeg {
-  height: 100%;
-  min-width: 1px;
+    height: 100%;
+    min-width: 1px;
 }
 .stackedLegend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 14px;
-  font-size: 11px;
-  color: var(--text-mid);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 11px;
+    color: var(--text-mid);
 }
 .legendItem {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 .legendValue {
-  color: var(--text-hi);
-  font-variant-numeric: tabular-nums;
-  margin-left: 2px;
+    color: var(--text-hi);
+    font-variant-numeric: tabular-nums;
+    margin-left: 2px;
 }
 
 /* ==== BarTimeline ==== */
 .barTimeline {
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 60px;
-  width: 100%;
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 60px;
+    width: 100%;
 }
 .barStack {
-  flex: 1;
-  min-width: 2px;
-  background: var(--accent);
-  transition: opacity 0.1s ease;
-  opacity: 0.8;
+    flex: 1;
+    min-width: 2px;
+    background: var(--accent);
+    transition: opacity 0.1s ease;
+    opacity: 0.8;
 }
 .barStack:hover {
-  opacity: 1;
+    opacity: 1;
 }
 
 /* ==== Sparkline ==== */
 .sparkWrap {
-  position: relative;
-  width: 100%;
-  line-height: 0;
-  display: flex;
-  align-items: stretch;
-  gap: 6px;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
+    position: relative;
+    width: 100%;
+    line-height: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 6px;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 .sparkBody {
-  position: relative;
-  flex: 1;
-  min-width: 0;
+    position: relative;
+    flex: 1;
+    min-width: 0;
 }
 .sparkWrap svg {
-  display: block;
-  width: 100%;
+    display: block;
+    width: 100%;
 }
 .yAxis {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-end;
-  font-size: 9px;
-  line-height: 1;
-  color: var(--text-dim);
-  font-variant-numeric: tabular-nums;
-  padding: 2px 0;
-  min-width: 24px;
-  flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-size: 9px;
+    line-height: 1;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    padding: 2px 0;
+    min-width: 24px;
+    flex-shrink: 0;
 }
 .xAxis {
-  position: relative;
-  height: 14px;
-  margin-top: 4px;
-  font-size: 9px;
-  line-height: 1;
-  color: var(--text-dim);
-  font-variant-numeric: tabular-nums;
+    position: relative;
+    height: 14px;
+    margin-top: 4px;
+    font-size: 9px;
+    line-height: 1;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
 }
 .xAxis > span {
-  position: absolute;
-  top: 0;
-  transform: translateX(-50%);
-  white-space: nowrap;
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    white-space: nowrap;
 }
 .xAxis > span:first-child {
-  transform: translateX(0);
+    transform: translateX(0);
 }
 .xAxis > span:last-child {
-  transform: translateX(-100%);
+    transform: translateX(-100%);
 }
 .tooltip {
-  position: absolute;
-  top: -22px;
-  left: 0;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  color: var(--text-hi);
-  padding: 2px 6px;
-  font-size: 10px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.1s ease;
+    position: absolute;
+    top: -22px;
+    left: 0;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-hi);
+    padding: 2px 6px;
+    font-size: 10px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s ease;
 }
 
 /* ==== MiniLineGrid ==== */
 .gridWrap {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px 14px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px 14px;
 }
 @media (min-width: 520px) {
-  .gridWrap {
-    grid-template-columns: repeat(3, 1fr);
-  }
+    .gridWrap {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 .cell {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
 }
 .cellLabel {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 10px;
-  color: var(--text-mid);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--text-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 .cellMax {
-  margin-left: auto;
-  color: var(--text-dim);
-  text-transform: none;
-  letter-spacing: 0;
+    margin-left: auto;
+    color: var(--text-dim);
+    text-transform: none;
+    letter-spacing: 0;
 }
 
 /* ==== Header ==== */
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
 }
 .headerLeft {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 .headerTitle {
-  font-size: 14px;
-  color: var(--text-hi);
-  font-weight: 500;
+    font-size: 14px;
+    color: var(--text-hi);
+    font-weight: 500;
 }
 .headerSub {
-  font-size: 11px;
-  color: var(--text-mid);
+    font-size: 11px;
+    color: var(--text-mid);
 }
 .tabs {
-  display: flex;
-  gap: 2px;
+    display: flex;
+    gap: 2px;
 }
 .tab {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-mid);
-  padding: 4px 10px;
-  border: 1px solid var(--border);
-  background: transparent;
-  cursor: pointer;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-mid);
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
 }
 .tab:hover {
-  color: var(--text-hi);
-  border-color: var(--border-2);
+    color: var(--text-hi);
+    border-color: var(--border-2);
 }
 .tabActive {
-  color: var(--text-hi);
-  background: var(--surface-2);
-  border-color: var(--border-2);
+    color: var(--text-hi);
+    background: var(--surface-2);
+    border-color: var(--border-2);
 }
 
 .miniTabs {
-  display: flex;
-  gap: 2px;
+    display: flex;
+    gap: 2px;
 }
 .miniTab {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-mid);
-  padding: 2px 7px;
-  border: 1px solid var(--border);
-  background: transparent;
-  cursor: pointer;
-  font-variant-numeric: tabular-nums;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-mid);
+    padding: 2px 7px;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    font-variant-numeric: tabular-nums;
 }
 .miniTab:hover {
-  color: var(--text-hi);
-  border-color: var(--border-2);
+    color: var(--text-hi);
+    border-color: var(--border-2);
 }
 .miniTabActive {
-  color: var(--text-hi);
-  background: var(--surface-2);
-  border-color: var(--border-2);
+    color: var(--text-hi);
+    background: var(--surface-2);
+    border-color: var(--border-2);
 }
 
 /* ==== Utility ==== */
 .dim {
-  color: var(--text-dim);
+    color: var(--text-dim);
 }
 .mid {
-  color: var(--text-mid);
+    color: var(--text-mid);
 }
 .hi {
-  color: var(--text-hi);
+    color: var(--text-hi);
 }
 .mono {
-  font-variant-numeric: tabular-nums;
+    font-variant-numeric: tabular-nums;
 }
