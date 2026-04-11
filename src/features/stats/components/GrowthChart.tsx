@@ -30,40 +30,52 @@ export function GrowthChart({ data }: GrowthChartProps) {
   const totalNew = points.reduce((s, p) => s + p.newUsers, 0);
 
   return (
-    <Card title="user growth" subtitle="last 30 days">
-      <StatRow>
-        <StatCell
-          label="total users"
-          value={data.currentTotal.toLocaleString()}
-          delta={
-            growthDelta >= 0
-              ? `+${growthDelta.toLocaleString()} (${growthPct.toFixed(1)}%)`
-              : `${growthDelta.toLocaleString()} (${growthPct.toFixed(1)}%)`
-          }
+    <>
+      <Card title="total users" subtitle="last 30 days">
+        <StatRow>
+          <StatCell
+            label="total users"
+            value={data.currentTotal.toLocaleString()}
+            delta={
+              growthDelta >= 0
+                ? `+${growthDelta.toLocaleString()} (${growthPct.toFixed(1)}%)`
+                : `${growthDelta.toLocaleString()} (${growthPct.toFixed(1)}%)`
+            }
+          />
+        </StatRow>
+        <HoverSparkline
+          height={80}
+          labels={labels}
+          series={[
+            {
+              color: CATEGORY_COLORS.accent,
+              points: totalSeries,
+            },
+          ]}
+          ariaLabel="Total users over the last 30 days"
         />
-        <StatCell
-          label="new (30d)"
-          value={totalNew.toLocaleString()}
-          delta="cumulative"
-          dimDelta
+      </Card>
+      <Card title="new users" subtitle="last 30 days">
+        <StatRow>
+          <StatCell
+            label="new (30d)"
+            value={totalNew.toLocaleString()}
+            delta="cumulative"
+            dimDelta
+          />
+        </StatRow>
+        <HoverSparkline
+          height={80}
+          labels={labels}
+          series={[
+            {
+              color: CATEGORY_COLORS.newUsers,
+              points: newSeries,
+            },
+          ]}
+          ariaLabel="New users over the last 30 days"
         />
-      </StatRow>
-      <HoverSparkline
-        height={80}
-        labels={labels}
-        series={[
-          {
-            color: CATEGORY_COLORS.accent,
-            points: totalSeries,
-          },
-          {
-            color: CATEGORY_COLORS.newUsers,
-            points: newSeries,
-            filled: false,
-          },
-        ]}
-        ariaLabel="User growth over the last 30 days"
-      />
-    </Card>
+      </Card>
+    </>
   );
 }
