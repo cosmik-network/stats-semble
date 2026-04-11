@@ -1,98 +1,92 @@
-import { AreaChart } from "@mantine/charts";
-import { Grid, GridCol, Paper, Stack, Text } from "@mantine/core";
 import type { ActivityStats } from "../types/stats";
+import {
+  CATEGORY_COLORS,
+  Card,
+  HoverSparkline,
+  MetricRow,
+  StatCell,
+  StatRow,
+} from "./primitives";
 
 interface ActivityChartProps {
   data: ActivityStats;
 }
 
 export function ActivityChart({ data }: ActivityChartProps) {
-  const chartData = data.dataPoints.map((point) => ({
-    date: new Date(point.date).toLocaleDateString("en-US", {
+  const points = data.dataPoints;
+  const labels = points.map((p) =>
+    new Date(p.date).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     }),
-    cards: point.cardsCreated,
-    collections: point.collectionsCreated,
-    connections: point.connectionsCreated,
-    follows: point.followsCreated,
+  );
+
+  const total = points.map((p, i) => ({ x: i, y: p.totalActions }));
+  const cards = points.map((p, i) => ({ x: i, y: p.cardsCreated }));
+  const collections = points.map((p, i) => ({
+    x: i,
+    y: p.collectionsCreated,
   }));
+  const follows = points.map((p, i) => ({ x: i, y: p.followsCreated }));
+
+  const rows = [
+    {
+      label: "cards created",
+      value: data.totals.cardsCreated,
+      color: CATEGORY_COLORS.cards,
+    },
+    {
+      label: "collections created",
+      value: data.totals.collectionsCreated,
+      color: CATEGORY_COLORS.collections,
+    },
+    {
+      label: "connections created",
+      value: data.totals.connectionsCreated,
+      color: CATEGORY_COLORS.connections,
+    },
+    {
+      label: "follows created",
+      value: data.totals.followsCreated,
+      color: CATEGORY_COLORS.follows,
+    },
+  ];
+  const maxRow = rows.reduce((m, r) => (r.value > m ? r.value : m), 0);
 
   return (
-    <Paper p="md" radius="lg" withBorder>
-      <Stack gap="md">
-        <div>
-          <Text size="sm" fw={600} c="dimmed" tt="uppercase">
-            Content Activity
-          </Text>
-          <Text size="xl" fw={700} mt="xs">
-            {data.totals.totalActions.toLocaleString()}
-          </Text>
-          <Text size="xs" c="dimmed">
-            Total actions in period
-          </Text>
-        </div>
-
-        <Grid>
-          <GridCol span={{ base: 6, sm: 3 }}>
-            <Stack gap={4}>
-              <Text size="xs" c="dimmed" tt="uppercase">
-                Cards
-              </Text>
-              <Text size="lg" fw={700}>
-                {data.totals.cardsCreated.toLocaleString()}
-              </Text>
-            </Stack>
-          </GridCol>
-          <GridCol span={{ base: 6, sm: 3 }}>
-            <Stack gap={4}>
-              <Text size="xs" c="dimmed" tt="uppercase">
-                Collections
-              </Text>
-              <Text size="lg" fw={700}>
-                {data.totals.collectionsCreated.toLocaleString()}
-              </Text>
-            </Stack>
-          </GridCol>
-          <GridCol span={{ base: 6, sm: 3 }}>
-            <Stack gap={4}>
-              <Text size="xs" c="dimmed" tt="uppercase">
-                Connections
-              </Text>
-              <Text size="lg" fw={700}>
-                {data.totals.connectionsCreated.toLocaleString()}
-              </Text>
-            </Stack>
-          </GridCol>
-          <GridCol span={{ base: 6, sm: 3 }}>
-            <Stack gap={4}>
-              <Text size="xs" c="dimmed" tt="uppercase">
-                Follows
-              </Text>
-              <Text size="lg" fw={700}>
-                {data.totals.followsCreated.toLocaleString()}
-              </Text>
-            </Stack>
-          </GridCol>
-        </Grid>
-
-        <AreaChart
-          withLegend
-          h={250}
-          data={chartData}
-          dataKey="date"
-          series={[
-            { name: "cards", color: "cyan.6", label: "Cards" },
-            { name: "collections", color: "violet.6", label: "Collections" },
-            { name: "connections", color: "pink.6", label: "Connections" },
-            { name: "follows", color: "orange.6", label: "Follows" },
-          ]}
-          curveType="monotone"
-          withDots={false}
-          yAxisProps={{ allowDecimals: false }}
-          fillOpacity={0.4}
+    <Card title="content activity" subtitle="last 30 days">
+      <StatRow>
+        <StatCell
+          label="total actions"
+          value={data.totals.totalActions.toLocaleString()}
         />
-      </Stack>
-    </Paper>
+      </StatRow>
+      <HoverSparkline
+        height={90}
+        labels={labels}
+        series={[
+          { color: CATEGORY_COLORS.accent, points: total },
+          { color: CATEGORY_COLORS.cards, points: cards, filled: false },
+          {
+            color: CATEGORY_COLORS.collections,
+            points: collections,
+            filled: false,
+          },
+          { color: CATEGORY_COLORS.follows, points: follows, filled: false },
+        ]}
+        ariaLabel="Daily content actions"
+      />
+      <div>
+        {rows.map((r) => (
+          <MetricRow
+            key={r.label}
+            color={r.color}
+            label={r.label}
+            value={r.value.toLocaleString()}
+            barFraction={maxRow > 0 ? r.value / maxRow : 0}
+          />
+        ))}
+      </div>
+    </Card>
   );
 }

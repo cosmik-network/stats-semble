@@ -1,6 +1,12 @@
-import { BarChart } from "@mantine/charts";
-import { Grid, GridCol, Paper, Stack, Text } from "@mantine/core";
 import type { EngagementStats } from "../types/stats";
+import {
+  CATEGORY_COLORS,
+  Card,
+  MetricRow,
+  StackedBarRow,
+  StatCell,
+  StatRow,
+} from "./primitives";
 
 interface EngagementOverviewChartProps {
   data: EngagementStats;
@@ -9,110 +15,86 @@ interface EngagementOverviewChartProps {
 export function EngagementOverviewChart({
   data,
 }: EngagementOverviewChartProps) {
-  const chartData = [
+  const activationPct = (data.activationRate * 100).toFixed(1);
+  const rows: {
+    label: string;
+    value: number;
+    color: string;
+  }[] = [
     {
-      category: "User Status",
-      Active: data.activeUsers,
-      Inactive: data.inactiveUsers,
+      label: "with cards",
+      value: data.usersWithCards,
+      color: CATEGORY_COLORS.cards,
+    },
+    {
+      label: "with collections",
+      value: data.usersWithCollections,
+      color: CATEGORY_COLORS.collections,
+    },
+    {
+      label: "with connections",
+      value: data.usersWithConnections,
+      color: CATEGORY_COLORS.connections,
+    },
+    {
+      label: "with follows",
+      value: data.usersWithFollows,
+      color: CATEGORY_COLORS.follows,
+    },
+    {
+      label: "with contributions",
+      value: data.usersWithContributions,
+      color: CATEGORY_COLORS.contributions,
     },
   ];
 
-  const activityBreakdown = [
-    {
-      category: "Activity Types",
-      Cards: data.usersWithCards,
-      Collections: data.usersWithCollections,
-      Connections: data.usersWithConnections,
-      Follows: data.usersWithFollows,
-      Contributions: data.usersWithContributions,
-    },
-  ];
+  const maxRow = rows.reduce((m, r) => (r.value > m ? r.value : m), 0);
 
   return (
-    <Paper p="md" radius="lg" withBorder>
-      <Stack gap="md">
-        <div>
-          <Text size="sm" fw={600} c="dimmed" tt="uppercase">
-            User Engagement
-          </Text>
-          <Text size="xl" fw={700} mt="xs">
-            {(data.activationRate * 100).toFixed(1)}%
-          </Text>
-          <Text size="xs" c="dimmed">
-            Activation rate
-          </Text>
-        </div>
-
-        <Grid>
-          <GridCol span={{ base: 12, sm: 4 }}>
-            <Stack gap={4}>
-              <Text size="xs" c="dimmed" tt="uppercase">
-                Total Users
-              </Text>
-              <Text size="lg" fw={700}>
-                {data.totalUsers.toLocaleString()}
-              </Text>
-            </Stack>
-          </GridCol>
-          <GridCol span={{ base: 12, sm: 4 }}>
-            <Stack gap={4}>
-              <Text size="xs" c="dimmed" tt="uppercase">
-                Active Users
-              </Text>
-              <Text size="lg" fw={700} c="teal.6">
-                {data.activeUsers.toLocaleString()}
-              </Text>
-            </Stack>
-          </GridCol>
-          <GridCol span={{ base: 12, sm: 4 }}>
-            <Stack gap={4}>
-              <Text size="xs" c="dimmed" tt="uppercase">
-                Avg Actions/User
-              </Text>
-              <Text size="lg" fw={700}>
-                {data.avgActionsPerActiveUser.toFixed(1)}
-              </Text>
-            </Stack>
-          </GridCol>
-        </Grid>
-
-        <BarChart
-          withLegend
-          h={120}
-          data={chartData}
-          dataKey="category"
-          series={[
-            { name: "Active", color: "teal.6", label: "Active" },
-            { name: "Inactive", color: "gray.5", label: "Inactive" },
-          ]}
-          orientation="horizontal"
-          type="stacked"
-          yAxisProps={{ width: 100 }}
+    <Card title="engagement" subtitle="activation + activity mix">
+      <StatRow>
+        <StatCell label="activation" value={`${activationPct}%`} />
+        <StatCell label="total users" value={data.totalUsers.toLocaleString()} />
+        <StatCell
+          label="active"
+          value={data.activeUsers.toLocaleString()}
+          delta={`of ${data.totalUsers.toLocaleString()}`}
+          dimDelta
         />
-
-        <Text size="xs" fw={600} c="dimmed" tt="uppercase" mt="md">
-          Activity Breakdown
-        </Text>
-        <BarChart
-          withLegend
-          h={140}
-          data={activityBreakdown}
-          dataKey="category"
-          series={[
-            { name: "Cards", color: "cyan.6", label: "Cards" },
-            { name: "Collections", color: "violet.6", label: "Collections" },
-            { name: "Connections", color: "pink.6", label: "Connections" },
-            { name: "Follows", color: "orange.6", label: "Follows" },
-            {
-              name: "Contributions",
-              color: "indigo.6",
-              label: "Contributions",
-            },
-          ]}
-          orientation="horizontal"
-          yAxisProps={{ width: 100 }}
+        <StatCell
+          label="avg actions"
+          value={data.avgActionsPerActiveUser.toFixed(1)}
+          delta="per active user"
+          dimDelta
         />
-      </Stack>
-    </Paper>
+      </StatRow>
+
+      <StackedBarRow
+        segments={[
+          {
+            label: "active",
+            value: data.activeUsers,
+            color: CATEGORY_COLORS.active,
+          },
+          {
+            label: "inactive",
+            value: data.inactiveUsers,
+            color: CATEGORY_COLORS.inactive,
+          },
+        ]}
+      />
+
+      <div>
+        {rows.map((r) => (
+          <MetricRow
+            key={r.label}
+            color={r.color}
+            label={r.label}
+            value={r.value.toLocaleString()}
+            barFraction={maxRow > 0 ? r.value / maxRow : 0}
+          />
+        ))}
+      </div>
+    </Card>
   );
 }

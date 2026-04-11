@@ -1,18 +1,22 @@
 import Logo from "@/assets/semble-logo.svg";
-import { Group, Image, Stack, Text } from "@mantine/core";
+import Image from "next/image";
+import styles from "@/features/stats/components/primitives/primitives.module.css";
 
 export default function Header() {
   return (
-    <Group gap={"xs"}>
-      <Image src={Logo.src} alt="Semble logo" w={"auto"} h={40} />
-      <Stack gap={0}>
-        <Text fw={700} fz={"sm"}>
-          Semble Analytics
-        </Text>
-        <Text fw={600} fz={"sm"} c={"gray"}>
-          Latest stats
-        </Text>
-      </Stack>
-    </Group>
+    <header className={styles.header}>
+      <div className={styles.headerLeft}>
+        <Image
+          src={Logo.src}
+          alt=""
+          width={28}
+          height={28}
+          style={{ width: "auto", height: 28 }}
+          unoptimized
+        />
+        <span className={styles.headerTitle}>semble analytics</span>
+      </div>
+      <span className={styles.headerSub}>latest stats</span>
+    </header>
   );
 }

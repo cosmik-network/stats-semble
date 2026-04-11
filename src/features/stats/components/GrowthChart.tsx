@@ -1,49 +1,69 @@
-import { LineChart } from "@mantine/charts";
-import { Paper, Stack, Text } from "@mantine/core";
 import type { GrowthStats } from "../types/stats";
+import {
+  CATEGORY_COLORS,
+  Card,
+  HoverSparkline,
+  StatCell,
+  StatRow,
+} from "./primitives";
 
 interface GrowthChartProps {
   data: GrowthStats;
 }
 
 export function GrowthChart({ data }: GrowthChartProps) {
-  const chartData = data.dataPoints.map((point) => ({
-    date: new Date(point.date).toLocaleDateString("en-US", {
+  const points = data.dataPoints;
+  const labels = points.map((p) =>
+    new Date(p.date).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     }),
-    totalUsers: point.totalUsers,
-    newUsers: point.newUsers,
-  }));
+  );
+
+  const totalSeries = points.map((p, i) => ({ x: i, y: p.totalUsers }));
+  const newSeries = points.map((p, i) => ({ x: i, y: p.newUsers }));
+
+  const firstTotal = points[0]?.totalUsers ?? 0;
+  const lastTotal = points[points.length - 1]?.totalUsers ?? data.currentTotal;
+  const growthDelta = lastTotal - firstTotal;
+  const growthPct = firstTotal > 0 ? (growthDelta / firstTotal) * 100 : 0;
+  const totalNew = points.reduce((s, p) => s + p.newUsers, 0);
 
   return (
-    <Paper p="md" radius="lg" withBorder>
-      <Stack gap="md">
-        <div>
-          <Text size="sm" fw={600} c="dimmed" tt="uppercase">
-            User Growth
-          </Text>
-          <Text size="xl" fw={700} mt="xs">
-            {data.currentTotal.toLocaleString()}
-          </Text>
-          <Text size="xs" c="dimmed">
-            Total users
-          </Text>
-        </div>
-        <LineChart
-          withLegend
-          h={250}
-          data={chartData}
-          dataKey="date"
-          series={[
-            { name: "totalUsers", color: "teal.6", label: "Total Users" },
-            { name: "newUsers", color: "blue.6", label: "New Users" },
-          ]}
-          curveType="monotone"
-          withDots={false}
-          yAxisProps={{ allowDecimals: false }}
+    <Card title="user growth" subtitle="last 30 days">
+      <StatRow>
+        <StatCell
+          label="total users"
+          value={data.currentTotal.toLocaleString()}
+          delta={
+            growthDelta >= 0
+              ? `+${growthDelta.toLocaleString()} (${growthPct.toFixed(1)}%)`
+              : `${growthDelta.toLocaleString()} (${growthPct.toFixed(1)}%)`
+          }
         />
-      </Stack>
-    </Paper>
+        <StatCell
+          label="new (30d)"
+          value={totalNew.toLocaleString()}
+          delta="cumulative"
+          dimDelta
+        />
+      </StatRow>
+      <HoverSparkline
+        height={80}
+        labels={labels}
+        series={[
+          {
+            color: CATEGORY_COLORS.accent,
+            points: totalSeries,
+          },
+          {
+            color: CATEGORY_COLORS.newUsers,
+            points: newSeries,
+            filled: false,
+          },
+        ]}
+        ariaLabel="User growth over the last 30 days"
+      />
+    </Card>
   );
 }

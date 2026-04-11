@@ -1,115 +1,96 @@
-import { BarChart } from "@mantine/charts";
-import { Grid, GridCol, Paper, Stack, Text } from "@mantine/core";
 import type { BreakdownStats } from "../types/stats";
+import {
+  CATEGORY_COLORS,
+  Card,
+  MetricRow,
+  SectionHeading,
+} from "./primitives";
 
 interface BreakdownChartsProps {
   data: BreakdownStats;
 }
 
+interface Group {
+  title: string;
+  total: number;
+  color: string;
+  items: { label: string; value: number }[];
+}
+
+function toItems(
+  record: Record<string, number>,
+  transformLabel: (s: string) => string = (s) => s,
+): { label: string; value: number }[] {
+  return Object.entries(record)
+    .map(([k, v]) => ({ label: transformLabel(k), value: v }))
+    .sort((a, b) => b.value - a.value);
+}
+
+function titleCase(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 export function BreakdownCharts({ data }: BreakdownChartsProps) {
-  const urlCardData = Object.entries(data.currentTotals.urlCards.byType).map(
-    ([type, count]) => ({
-      type: type.charAt(0).toUpperCase() + type.slice(1),
-      count,
-    }),
-  );
-
-  const collectionData = Object.entries(
-    data.currentTotals.collections.byAccessType,
-  ).map(([type, count]) => ({
-    type,
-    count,
-  }));
-
-  const connectionData = Object.entries(
-    data.currentTotals.connections.byType,
-  ).map(([type, count]) => ({
-    type: type.charAt(0).toUpperCase() + type.slice(1),
-    count,
-  }));
+  const groups: Group[] = [
+    {
+      title: "url cards by type",
+      total: data.currentTotals.urlCards.total,
+      color: CATEGORY_COLORS.cards,
+      items: toItems(data.currentTotals.urlCards.byType, titleCase),
+    },
+    {
+      title: "collections by access",
+      total: data.currentTotals.collections.total,
+      color: CATEGORY_COLORS.collections,
+      items: toItems(data.currentTotals.collections.byAccessType),
+    },
+    {
+      title: "connections by type",
+      total: data.currentTotals.connections.total,
+      color: CATEGORY_COLORS.connections,
+      items: toItems(data.currentTotals.connections.byType, titleCase),
+    },
+  ];
 
   return (
-    <Grid>
-      <GridCol span={{ base: 12, md: 4 }}>
-        <Paper p="md" radius="lg" withBorder h="100%">
-          <Stack gap="md">
-            <div>
-              <Text size="sm" fw={600} c="dimmed" tt="uppercase">
-                URL Cards by Type
-              </Text>
-              <Text size="xl" fw={700} mt="xs">
-                {data.currentTotals.urlCards.total.toLocaleString()}
-              </Text>
-              <Text size="xs" c="dimmed">
-                Total URL cards
-              </Text>
-            </div>
-            <BarChart
-              h={200}
-              data={urlCardData}
-              dataKey="type"
-              series={[{ name: "count", color: "cyan.6" }]}
-              orientation="horizontal"
-              yAxisProps={{ width: 80 }}
-              withLegend={false}
+    <Card title="breakdown" subtitle="current totals by category">
+      {groups.map((group) => {
+        const max = group.items.reduce(
+          (m, it) => (it.value > m ? it.value : m),
+          0,
+        );
+        return (
+          <div key={group.title}>
+            <SectionHeading
+              title={group.title}
+              right={
+                <span
+                  style={{ fontSize: 11, color: "var(--text-hi)" }}
+                  className="mono"
+                >
+                  {group.total.toLocaleString()}
+                </span>
+              }
             />
-          </Stack>
-        </Paper>
-      </GridCol>
-
-      <GridCol span={{ base: 12, md: 4 }}>
-        <Paper p="md" radius="lg" withBorder h="100%">
-          <Stack gap="md">
             <div>
-              <Text size="sm" fw={600} c="dimmed" tt="uppercase">
-                Collections by Access
-              </Text>
-              <Text size="xl" fw={700} mt="xs">
-                {data.currentTotals.collections.total.toLocaleString()}
-              </Text>
-              <Text size="xs" c="dimmed">
-                Total collections
-              </Text>
+              {group.items.length === 0 && (
+                <div style={{ fontSize: 11, color: "var(--text-dim)", padding: "6px 0" }}>
+                  no data
+                </div>
+              )}
+              {group.items.map((it) => (
+                <MetricRow
+                  key={it.label}
+                  color={group.color}
+                  label={it.label}
+                  value={it.value.toLocaleString()}
+                  barFraction={max > 0 ? it.value / max : 0}
+                />
+              ))}
             </div>
-            <BarChart
-              h={200}
-              data={collectionData}
-              dataKey="type"
-              series={[{ name: "count", color: "violet.6" }]}
-              orientation="horizontal"
-              yAxisProps={{ width: 80 }}
-              withLegend={false}
-            />
-          </Stack>
-        </Paper>
-      </GridCol>
-
-      <GridCol span={{ base: 12, md: 4 }}>
-        <Paper p="md" radius="lg" withBorder h="100%">
-          <Stack gap="md">
-            <div>
-              <Text size="sm" fw={600} c="dimmed" tt="uppercase">
-                Connections by Type
-              </Text>
-              <Text size="xl" fw={700} mt="xs">
-                {data.currentTotals.connections.total.toLocaleString()}
-              </Text>
-              <Text size="xs" c="dimmed">
-                Total connections
-              </Text>
-            </div>
-            <BarChart
-              h={200}
-              data={connectionData}
-              dataKey="type"
-              series={[{ name: "count", color: "pink.6" }]}
-              orientation="horizontal"
-              yAxisProps={{ width: 80 }}
-              withLegend={false}
-            />
-          </Stack>
-        </Paper>
-      </GridCol>
-    </Grid>
+          </div>
+        );
+      })}
+    </Card>
   );
 }
