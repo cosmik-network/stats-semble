@@ -12,6 +12,18 @@ import {
   type SparkSeries,
 } from "./sparkline-shared";
 
+function pickAxisTicks(n: number, target = 5): number[] {
+  if (n <= 0) return [];
+  if (n === 1) return [0];
+  const count = Math.min(n, target);
+  if (count === 1) return [0];
+  const ticks: number[] = [];
+  for (let i = 0; i < count; i++) {
+    ticks.push(Math.round((i / (count - 1)) * (n - 1)));
+  }
+  return Array.from(new Set(ticks));
+}
+
 interface HoverSparklineProps {
   series: SparkSeries[];
   labels: string[];
@@ -146,6 +158,18 @@ export function HoverSparkline({
           </>
         )}
       </svg>
+        {labels.length > 0 && (
+          <div className={styles.xAxis} aria-hidden="true">
+            {pickAxisTicks(labels.length).map((i) => (
+              <span
+                key={i}
+                style={{ left: `${(i / Math.max(labels.length - 1, 1)) * 100}%` }}
+              >
+                {labels[i]}
+              </span>
+            ))}
+          </div>
+        )}
         <div
           className={styles.tooltip}
           style={{

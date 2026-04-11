@@ -233,6 +233,27 @@
   min-width: 24px;
   flex-shrink: 0;
 }
+.xAxis {
+  position: relative;
+  height: 14px;
+  margin-top: 4px;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+.xAxis > span {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.xAxis > span:first-child {
+  transform: translateX(0);
+}
+.xAxis > span:last-child {
+  transform: translateX(-100%);
+}
 .tooltip {
   position: absolute;
   top: -22px;
