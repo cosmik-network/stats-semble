@@ -1,7 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { updateTag } from "next/cache";
 
 export async function revalidateDashboard(): Promise<void> {
-  revalidatePath("/");
+  updateTag("dashboard");
 }
