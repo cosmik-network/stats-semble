@@ -3,6 +3,7 @@ export const CATEGORY_COLORS = {
   collections: "#8b5cf6",
   follows: "#10b981",
   connections: "#06b6d4",
+  collectionLinks: "#ec4899",
   contributions: "#f59e0b",
   newUsers: "#f97316",
   active: "#10b981",

@@ -54,6 +54,16 @@ export interface DailyMetrics {
     updated: number;
     deleted: number;
   };
+  connections: {
+    created: number;
+    updated: number;
+    deleted: number;
+  };
+  collectionLinks: {
+    created: number;
+    updated: number;
+    deleted: number;
+  };
 }
 
 export interface AnalyticsResult {
@@ -74,6 +84,18 @@ export interface AnalyticsResult {
       active: number;
     };
     follows: {
+      created: number;
+      updated: number;
+      deleted: number;
+      active: number;
+    };
+    connections: {
+      created: number;
+      updated: number;
+      deleted: number;
+      active: number;
+    };
+    collectionLinks: {
       created: number;
       updated: number;
       deleted: number;

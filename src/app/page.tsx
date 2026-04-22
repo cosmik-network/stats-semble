@@ -180,8 +180,14 @@ async function RecordsByTypeSection() {
   ]);
 
   const recent = dailyActivity.slice(-7);
-  const sum7 = (key: "cards" | "collections" | "follows") =>
-    recent.reduce((s, d) => s + d[key].created, 0);
+  const sum7 = (
+    key:
+      | "cards"
+      | "collections"
+      | "follows"
+      | "connections"
+      | "collectionLinks",
+  ) => recent.reduce((s, d) => s + d[key].created, 0);
 
   const types: {
     name: string;
@@ -214,6 +220,22 @@ async function RecordsByTypeSection() {
       created: overallStats.recordsByType.follows.created,
       updated: overallStats.recordsByType.follows.updated,
       recent7: sum7("follows"),
+    },
+    {
+      name: "connections",
+      color: CATEGORY_COLORS.connections,
+      active: overallStats.recordsByType.connections.active,
+      created: overallStats.recordsByType.connections.created,
+      updated: overallStats.recordsByType.connections.updated,
+      recent7: sum7("connections"),
+    },
+    {
+      name: "collection links",
+      color: CATEGORY_COLORS.collectionLinks,
+      active: overallStats.recordsByType.collectionLinks.active,
+      created: overallStats.recordsByType.collectionLinks.created,
+      updated: overallStats.recordsByType.collectionLinks.updated,
+      recent7: sum7("collectionLinks"),
     },
   ];
 
@@ -318,6 +340,26 @@ async function RecentActivitySection() {
                 secondary={
                   day.follows.updated > 0
                     ? `(${day.follows.updated})`
+                    : undefined
+                }
+              />
+              <MetricRow
+                color={CATEGORY_COLORS.connections}
+                label="connections"
+                value={`+${day.connections.created}`}
+                secondary={
+                  day.connections.updated > 0
+                    ? `(${day.connections.updated})`
+                    : undefined
+                }
+              />
+              <MetricRow
+                color={CATEGORY_COLORS.collectionLinks}
+                label="collection links"
+                value={`+${day.collectionLinks.created}`}
+                secondary={
+                  day.collectionLinks.updated > 0
+                    ? `(${day.collectionLinks.updated})`
                     : undefined
                 }
               />

@@ -51,7 +51,9 @@ export function DailyActiveUsersChart({
             label="dau (today)"
             value={dau.toLocaleString()}
             delta={
-              mau && mau > 0 ? `${((dau / mau) * 100).toFixed(1)}% of mau` : undefined
+              mau && mau > 0
+                ? `${((dau / mau) * 100).toFixed(1)}% of mau`
+                : undefined
             }
             dimDelta
           />
@@ -61,7 +63,9 @@ export function DailyActiveUsersChart({
             label="wau (7d)"
             value={wau.toLocaleString()}
             delta={
-              mau && mau > 0 ? `${((wau / mau) * 100).toFixed(1)}% of mau` : undefined
+              mau && mau > 0
+                ? `${((wau / mau) * 100).toFixed(1)}% of mau`
+                : undefined
             }
             dimDelta
           />
@@ -148,6 +152,14 @@ export function RecordsCreatedChart({ dailyActivity }: ActivityChartsProps) {
     x: i,
     y: d.follows.created,
   }));
+  const connections = dailyActivity.map((d, i) => ({
+    x: i,
+    y: d.connections.created,
+  }));
+  const collectionLinks = dailyActivity.map((d, i) => ({
+    x: i,
+    y: d.collectionLinks.created,
+  }));
 
   return (
     <Card title="records created" subtitle="30 days · per type">
@@ -168,6 +180,16 @@ export function RecordsCreatedChart({ dailyActivity }: ActivityChartsProps) {
             color: CATEGORY_COLORS.follows,
             points: follows,
           },
+          {
+            name: "connections",
+            color: CATEGORY_COLORS.connections,
+            points: connections,
+          },
+          {
+            name: "collection links",
+            color: CATEGORY_COLORS.collectionLinks,
+            points: collectionLinks,
+          },
         ]}
       />
     </Card>
@@ -178,7 +200,12 @@ export function CombinedActivityChart({ dailyActivity }: ActivityChartsProps) {
   const labels = dailyActivity.map((d) => shortDate(d.date));
   const total = dailyActivity.map((d, i) => ({
     x: i,
-    y: d.cards.created + d.collections.created + d.follows.created,
+    y:
+      d.cards.created +
+      d.collections.created +
+      d.follows.created +
+      d.connections.created +
+      d.collectionLinks.created,
   }));
   const users = dailyActivity.map((d, i) => ({ x: i, y: d.activeUsers }));
   const cards = dailyActivity.map((d, i) => ({ x: i, y: d.cards.created }));
@@ -189,6 +216,14 @@ export function CombinedActivityChart({ dailyActivity }: ActivityChartsProps) {
   const follows = dailyActivity.map((d, i) => ({
     x: i,
     y: d.follows.created,
+  }));
+  const connections = dailyActivity.map((d, i) => ({
+    x: i,
+    y: d.connections.created,
+  }));
+  const collectionLinks = dailyActivity.map((d, i) => ({
+    x: i,
+    y: d.collectionLinks.created,
   }));
 
   return (
@@ -205,6 +240,16 @@ export function CombinedActivityChart({ dailyActivity }: ActivityChartsProps) {
             filled: false,
           },
           { color: CATEGORY_COLORS.follows, points: follows, filled: false },
+          {
+            color: CATEGORY_COLORS.connections,
+            points: connections,
+            filled: false,
+          },
+          {
+            color: CATEGORY_COLORS.collectionLinks,
+            points: collectionLinks,
+            filled: false,
+          },
           { color: CATEGORY_COLORS.newUsers, points: users, filled: false },
         ]}
         ariaLabel="Activity overview timeline"

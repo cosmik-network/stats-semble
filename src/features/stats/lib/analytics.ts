@@ -27,6 +27,8 @@ export class SembleAnalytics {
         "network.cosmik.card",
         "network.cosmik.collection",
         "network.cosmik.follow",
+        "network.cosmik.connection",
+        "network.cosmik.collectionLink",
       ],
       since,
       until,
@@ -35,6 +37,8 @@ export class SembleAnalytics {
     const cardStats = stats["network.cosmik.card"];
     const collectionStats = stats["network.cosmik.collection"];
     const followStats = stats["network.cosmik.follow"];
+    const connectionStats = stats["network.cosmik.connection"];
+    const collectionLinkStats = stats["network.cosmik.collectionLink"];
 
     // Use the maximum dids_estimate across all types
     // Note: This is an estimate - the same user may have created cards, collections, and follows
@@ -42,6 +46,8 @@ export class SembleAnalytics {
       cardStats?.dids_estimate || 0,
       collectionStats?.dids_estimate || 0,
       followStats?.dids_estimate || 0,
+      connectionStats?.dids_estimate || 0,
+      collectionLinkStats?.dids_estimate || 0,
     );
 
     return {
@@ -49,14 +55,20 @@ export class SembleAnalytics {
       totalRecordsCreated:
         (cardStats?.creates || 0) +
         (collectionStats?.creates || 0) +
-        (followStats?.creates || 0),
+        (followStats?.creates || 0) +
+        (connectionStats?.creates || 0) +
+        (collectionLinkStats?.creates || 0),
       totalRecordsActive:
         (cardStats?.creates || 0) -
         (cardStats?.deletes || 0) +
         (collectionStats?.creates || 0) -
         (collectionStats?.deletes || 0) +
         (followStats?.creates || 0) -
-        (followStats?.deletes || 0),
+        (followStats?.deletes || 0) +
+        (connectionStats?.creates || 0) -
+        (connectionStats?.deletes || 0) +
+        (collectionLinkStats?.creates || 0) -
+        (collectionLinkStats?.deletes || 0),
       recordsByType: {
         cards: {
           created: cardStats?.creates || 0,
@@ -76,6 +88,21 @@ export class SembleAnalytics {
           updated: followStats?.updates || 0,
           deleted: followStats?.deletes || 0,
           active: (followStats?.creates || 0) - (followStats?.deletes || 0),
+        },
+        connections: {
+          created: connectionStats?.creates || 0,
+          updated: connectionStats?.updates || 0,
+          deleted: connectionStats?.deletes || 0,
+          active:
+            (connectionStats?.creates || 0) - (connectionStats?.deletes || 0),
+        },
+        collectionLinks: {
+          created: collectionLinkStats?.creates || 0,
+          updated: collectionLinkStats?.updates || 0,
+          deleted: collectionLinkStats?.deletes || 0,
+          active:
+            (collectionLinkStats?.creates || 0) -
+            (collectionLinkStats?.deletes || 0),
         },
       },
     };
@@ -118,6 +145,18 @@ export class SembleAnalytics {
       deleted: number;
       active: number;
     };
+    connections: {
+      created: number;
+      updated: number;
+      deleted: number;
+      active: number;
+    };
+    collectionLinks: {
+      created: number;
+      updated: number;
+      deleted: number;
+      active: number;
+    };
   }> {
     const analytics = await this.getAnalytics(since, until);
     return analytics.recordsByType;
@@ -133,18 +172,33 @@ export class SembleAnalytics {
     since?: string,
     until?: string,
   ): Promise<DailyMetrics[]> {
-    // Fetch timeseries for cards, collections, and follows
-    const [cardTimeseries, collectionTimeseries, followTimeseries] =
-      await Promise.all([
-        this.client.fetchTimeseries("network.cosmik.card", since, until),
-        this.client.fetchTimeseries("network.cosmik.collection", since, until),
-        this.client.fetchTimeseries("network.cosmik.follow", since, until),
-      ]);
+    // Fetch timeseries for cards, collections, follows, connections, and collectionLinks
+    const [
+      cardTimeseries,
+      collectionTimeseries,
+      followTimeseries,
+      connectionTimeseries,
+      collectionLinkTimeseries,
+    ] = await Promise.all([
+      this.client.fetchTimeseries("network.cosmik.card", since, until),
+      this.client.fetchTimeseries("network.cosmik.collection", since, until),
+      this.client.fetchTimeseries("network.cosmik.follow", since, until),
+      this.client.fetchTimeseries("network.cosmik.connection", since, until),
+      this.client.fetchTimeseries(
+        "network.cosmik.collectionLink",
+        since,
+        until,
+      ),
+    ]);
 
     const cardData = cardTimeseries.series["network.cosmik.card"] || [];
     const collectionData =
       collectionTimeseries.series["network.cosmik.collection"] || [];
     const followData = followTimeseries.series["network.cosmik.follow"] || [];
+    const connectionData =
+      connectionTimeseries.series["network.cosmik.connection"] || [];
+    const collectionLinkData =
+      collectionLinkTimeseries.series["network.cosmik.collectionLink"] || [];
 
     // Combine data by date
     return cardTimeseries.range.map((date, index) => {
@@ -166,6 +220,18 @@ export class SembleAnalytics {
         deletes: 0,
         dids_estimate: 0,
       };
+      const connection = connectionData[index] || {
+        creates: 0,
+        updates: 0,
+        deletes: 0,
+        dids_estimate: 0,
+      };
+      const collectionLink = collectionLinkData[index] || {
+        creates: 0,
+        updates: 0,
+        deletes: 0,
+        dids_estimate: 0,
+      };
 
       return {
         date,
@@ -173,6 +239,8 @@ export class SembleAnalytics {
           card.dids_estimate,
           collection.dids_estimate,
           follow.dids_estimate,
+          connection.dids_estimate,
+          collectionLink.dids_estimate,
         ),
         cards: {
           created: card.creates,
@@ -188,6 +256,16 @@ export class SembleAnalytics {
           created: follow.creates,
           updated: follow.updates,
           deleted: follow.deletes,
+        },
+        connections: {
+          created: connection.creates,
+          updated: connection.updates,
+          deleted: connection.deletes,
+        },
+        collectionLinks: {
+          created: collectionLink.creates,
+          updated: collectionLink.updates,
+          deleted: collectionLink.deletes,
         },
       };
     });
@@ -210,6 +288,8 @@ export class SembleAnalytics {
         "network.cosmik.card",
         "network.cosmik.collection",
         "network.cosmik.follow",
+        "network.cosmik.connection",
+        "network.cosmik.collectionLink",
       ],
       since,
       until,
@@ -218,12 +298,16 @@ export class SembleAnalytics {
     const cardStats = stats["network.cosmik.card"];
     const collectionStats = stats["network.cosmik.collection"];
     const followStats = stats["network.cosmik.follow"];
+    const connectionStats = stats["network.cosmik.connection"];
+    const collectionLinkStats = stats["network.cosmik.collectionLink"];
 
     // Return the maximum estimate (users may have created cards, collections, and follows)
     return Math.max(
       cardStats?.dids_estimate || 0,
       collectionStats?.dids_estimate || 0,
       followStats?.dids_estimate || 0,
+      connectionStats?.dids_estimate || 0,
+      collectionLinkStats?.dids_estimate || 0,
     );
   }
 
@@ -244,6 +328,8 @@ export class SembleAnalytics {
         "network.cosmik.card",
         "network.cosmik.collection",
         "network.cosmik.follow",
+        "network.cosmik.connection",
+        "network.cosmik.collectionLink",
       ],
       since,
       until,
@@ -252,12 +338,16 @@ export class SembleAnalytics {
     const cardStats = stats["network.cosmik.card"];
     const collectionStats = stats["network.cosmik.collection"];
     const followStats = stats["network.cosmik.follow"];
+    const connectionStats = stats["network.cosmik.connection"];
+    const collectionLinkStats = stats["network.cosmik.collectionLink"];
 
     // Return the maximum estimate (users may have created cards, collections, and follows)
     return Math.max(
       cardStats?.dids_estimate || 0,
       collectionStats?.dids_estimate || 0,
       followStats?.dids_estimate || 0,
+      connectionStats?.dids_estimate || 0,
+      collectionLinkStats?.dids_estimate || 0,
     );
   }
 
@@ -274,6 +364,8 @@ export class SembleAnalytics {
         "network.cosmik.card",
         "network.cosmik.collection",
         "network.cosmik.follow",
+        "network.cosmik.connection",
+        "network.cosmik.collectionLink",
       ],
       startOfToday.toISOString(),
     );
@@ -281,11 +373,15 @@ export class SembleAnalytics {
     const cardStats = stats["network.cosmik.card"];
     const collectionStats = stats["network.cosmik.collection"];
     const followStats = stats["network.cosmik.follow"];
+    const connectionStats = stats["network.cosmik.connection"];
+    const collectionLinkStats = stats["network.cosmik.collectionLink"];
 
     return Math.max(
       cardStats?.dids_estimate || 0,
       collectionStats?.dids_estimate || 0,
       followStats?.dids_estimate || 0,
+      connectionStats?.dids_estimate || 0,
+      collectionLinkStats?.dids_estimate || 0,
     );
   }
 }
