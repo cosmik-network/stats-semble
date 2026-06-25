@@ -5,7 +5,7 @@ import Image from "next/image";
 import styles from "@/features/stats/components/primitives/primitives.module.css";
 import LastUpdated from "@/features/navigation/components/last-updated/LastUpdated";
 
-export type HeaderTab = "ufo" | "db";
+export type HeaderTab = "product" | "ufo" | "db";
 
 interface Props {
   activeTab: HeaderTab;
@@ -31,6 +31,14 @@ export default function Header({ activeTab, onTabChange, lastUpdated }: Props) {
         </div>
       </div>
       <nav className={styles.tabs} aria-label="data source">
+        <button
+          type="button"
+          onClick={() => onTabChange("product")}
+          className={`${styles.tab} ${activeTab === "product" ? styles.tabActive : ""}`}
+          aria-current={activeTab === "product" ? "page" : undefined}
+        >
+          product
+        </button>
         <button
           type="button"
           onClick={() => onTabChange("db")}

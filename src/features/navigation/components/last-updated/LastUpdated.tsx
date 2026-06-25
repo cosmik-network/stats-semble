@@ -50,7 +50,13 @@ export default function LastUpdated({ timestamp }: Props) {
     : relative === null
       ? "updated"
       : `updated ${relative}`;
-  const absolute = new Date(timestamp).toLocaleString();
+  // Fixed locale + UTC so SSR and client render identical text (avoids
+  // hydration mismatch from differing server/browser locales).
+  const absolute = new Date(timestamp).toLocaleString("en-US", {
+    dateStyle: "medium",
+    timeStyle: "medium",
+    timeZone: "UTC",
+  });
 
   return (
     <button

@@ -1,17 +1,21 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import Header, { type HeaderTab } from "@/features/navigation/components/header/Header";
+import Header, {
+  type HeaderTab,
+} from "@/features/navigation/components/header/Header";
 
 interface Props {
   initialTab?: HeaderTab;
+  productContent: ReactNode;
   ufoContent: ReactNode;
   dbContent: ReactNode;
   lastUpdated: string;
 }
 
 export default function DashboardTabs({
-  initialTab = "db",
+  initialTab = "product",
+  productContent,
   ufoContent,
   dbContent,
   lastUpdated,
@@ -20,12 +24,12 @@ export default function DashboardTabs({
 
   return (
     <>
-      <Header
-        activeTab={tab}
-        onTabChange={setTab}
-        lastUpdated={lastUpdated}
-      />
-      {tab === "ufo" ? ufoContent : dbContent}
+      <Header activeTab={tab} onTabChange={setTab} lastUpdated={lastUpdated} />
+      {tab === "product"
+        ? productContent
+        : tab === "ufo"
+          ? ufoContent
+          : dbContent}
     </>
   );
 }

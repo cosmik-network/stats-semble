@@ -12,6 +12,9 @@ import { BreakdownCharts } from "@/features/stats/components/BreakdownCharts";
 import { EngagementOverviewChart } from "@/features/stats/components/EngagementOverviewChart";
 import { GrowthChart } from "@/features/stats/components/GrowthChart";
 import { StatsClient } from "@/features/stats/lib/stats-dal";
+import { ProductAnalyticsClient } from "@/features/product-analytics/lib/dal";
+import { WacSection } from "@/features/product-analytics/components/WacSection";
+import { FunnelSection } from "@/features/product-analytics/components/FunnelSection";
 import {
   CATEGORY_COLORS,
   Card,
@@ -118,6 +121,23 @@ async function getBreakdownStats() {
   cacheTag("dashboard");
   const client = new StatsClient();
   return client.getBreakdown("day", 30);
+}
+
+async function getWacStats() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("dashboard");
+  // weeks=0 => all-time, so the client can navigate every week.
+  const client = new ProductAnalyticsClient();
+  return client.getWac(undefined, 0);
+}
+
+async function getActivationFunnelStats() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("dashboard");
+  const client = new ProductAnalyticsClient();
+  return client.getActivationFunnel(undefined, 0);
 }
 
 async function getFetchedAt() {
@@ -371,6 +391,16 @@ async function RecentActivitySection() {
   );
 }
 
+async function ProductWacSection() {
+  const wacData = await getWacStats();
+  return <WacSection data={wacData} />;
+}
+
+async function ProductFunnelSection() {
+  const funnelData = await getActivationFunnelStats();
+  return <FunnelSection data={funnelData} />;
+}
+
 async function StatsGrowthSection() {
   const growthData = await getGrowthStats();
   return <GrowthChart data={growthData} />;
@@ -424,6 +454,18 @@ function LoadingState({ label = "loading" }: { label?: string }) {
 export default async function Home() {
   const lastUpdated = await getFetchedAt();
 
+  const productContent = (
+    <>
+      <Suspense fallback={<LoadingState />}>
+        <ProductWacSection />
+      </Suspense>
+
+      <Suspense fallback={<LoadingState />}>
+        <ProductFunnelSection />
+      </Suspense>
+    </>
+  );
+
   const ufoContent = (
     <>
       <Suspense fallback={<LoadingState />}>
@@ -471,6 +513,7 @@ export default async function Home() {
   return (
     <main className="term-root">
       <DashboardTabs
+        productContent={productContent}
         ufoContent={ufoContent}
         dbContent={dbContent}
         lastUpdated={lastUpdated}
