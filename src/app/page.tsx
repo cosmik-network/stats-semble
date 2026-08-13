@@ -15,6 +15,9 @@ import { StatsClient } from "@/features/stats/lib/stats-dal";
 import { ProductAnalyticsClient } from "@/features/product-analytics/lib/dal";
 import { WacSection } from "@/features/product-analytics/components/WacSection";
 import { FunnelSection } from "@/features/product-analytics/components/FunnelSection";
+import { OnboardingAnalyticsClient } from "@/features/onboarding-analytics/lib/dal";
+import { OnboardingWeeklySection } from "@/features/onboarding-analytics/components/OnboardingWeeklySection";
+import { OnboardingSummarySection } from "@/features/onboarding-analytics/components/OnboardingSummarySection";
 import {
   CATEGORY_COLORS,
   Card,
@@ -138,6 +141,23 @@ async function getActivationFunnelStats() {
   cacheTag("dashboard");
   const client = new ProductAnalyticsClient();
   return client.getActivationFunnel(undefined, 0);
+}
+
+async function getOnboardingWeeklyStats() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("dashboard");
+  // No endWeek => most recent completed week; the client navigates from there.
+  const client = new OnboardingAnalyticsClient();
+  return client.getWeekly();
+}
+
+async function getOnboardingSummaryStats() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("dashboard");
+  const client = new OnboardingAnalyticsClient();
+  return client.getSummary();
 }
 
 async function getFetchedAt() {
@@ -401,6 +421,16 @@ async function ProductFunnelSection() {
   return <FunnelSection data={funnelData} />;
 }
 
+async function OnboardingWeekly() {
+  const data = await getOnboardingWeeklyStats();
+  return <OnboardingWeeklySection initialData={data} />;
+}
+
+async function OnboardingSummary() {
+  const data = await getOnboardingSummaryStats();
+  return <OnboardingSummarySection data={data} />;
+}
+
 async function StatsGrowthSection() {
   const growthData = await getGrowthStats();
   return <GrowthChart data={growthData} />;
@@ -466,6 +496,18 @@ export default async function Home() {
     </>
   );
 
+  const onboardingContent = (
+    <>
+      <Suspense fallback={<LoadingState />}>
+        <OnboardingWeekly />
+      </Suspense>
+
+      <Suspense fallback={<LoadingState />}>
+        <OnboardingSummary />
+      </Suspense>
+    </>
+  );
+
   const ufoContent = (
     <>
       <Suspense fallback={<LoadingState />}>
@@ -514,6 +556,7 @@ export default async function Home() {
     <main className="term-root">
       <DashboardTabs
         productContent={productContent}
+        onboardingContent={onboardingContent}
         ufoContent={ufoContent}
         dbContent={dbContent}
         lastUpdated={lastUpdated}
