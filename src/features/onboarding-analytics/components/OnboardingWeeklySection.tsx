@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, type ReactNode } from "react";
 import {
   Card,
   SectionHeading,
@@ -17,9 +17,11 @@ import type { OnboardingWeeklyStatsDTO } from "../types";
 
 interface Props {
   initialData: OnboardingWeeklyStatsDTO;
+  /** Rendered beside the week navigator (the lock button, when gated). */
+  headerAction?: ReactNode;
 }
 
-export function OnboardingWeeklySection({ initialData }: Props) {
+export function OnboardingWeeklySection({ initialData, headerAction }: Props) {
   const [data, setData] = useState(initialData);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -47,13 +49,16 @@ export function OnboardingWeeklySection({ initialData }: Props) {
       title="onboarding · weekly cohort"
       subtitle={`signups week of ${formatWeekRange(data.cohortWeekStart)}`}
       right={
-        <WeekNav
-          label={formatWeekShort(data.cohortWeekStart)}
-          onPrev={() => goToWeek(-1)}
-          onNext={() => goToWeek(1)}
-          canPrev={!pending}
-          canNext={!pending && !atLatest}
-        />
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <WeekNav
+            label={formatWeekShort(data.cohortWeekStart)}
+            onPrev={() => goToWeek(-1)}
+            onNext={() => goToWeek(1)}
+            canPrev={!pending}
+            canNext={!pending && !atLatest}
+          />
+          {headerAction}
+        </div>
       }
     >
       <StatRow>

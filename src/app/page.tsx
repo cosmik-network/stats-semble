@@ -18,6 +18,12 @@ import { FunnelSection } from "@/features/product-analytics/components/FunnelSec
 import { OnboardingAnalyticsClient } from "@/features/onboarding-analytics/lib/dal";
 import { OnboardingWeeklySection } from "@/features/onboarding-analytics/components/OnboardingWeeklySection";
 import { OnboardingSummarySection } from "@/features/onboarding-analytics/components/OnboardingSummarySection";
+import { PasswordGate } from "@/features/onboarding-analytics/components/PasswordGate";
+import { LockButton } from "@/features/onboarding-analytics/components/LockButton";
+import {
+  hasOnboardingAccess,
+  isGateDisabled,
+} from "@/features/onboarding-analytics/lib/auth";
 import {
   CATEGORY_COLORS,
   Card,
@@ -421,14 +427,27 @@ async function ProductFunnelSection() {
   return <FunnelSection data={funnelData} />;
 }
 
-async function OnboardingWeekly() {
-  const data = await getOnboardingWeeklyStats();
-  return <OnboardingWeeklySection initialData={data} />;
-}
+// Password-gated. The access check runs BEFORE any fetch, so onboarding data
+// never reaches the client payload for visitors who haven't unlocked the tab.
+async function OnboardingContent() {
+  if (!(await hasOnboardingAccess())) {
+    return <PasswordGate />;
+  }
 
-async function OnboardingSummary() {
-  const data = await getOnboardingSummaryStats();
-  return <OnboardingSummarySection data={data} />;
+  const [weekly, summary] = await Promise.all([
+    getOnboardingWeeklyStats(),
+    getOnboardingSummaryStats(),
+  ]);
+
+  return (
+    <>
+      <OnboardingWeeklySection
+        initialData={weekly}
+        headerAction={isGateDisabled() ? undefined : <LockButton />}
+      />
+      <OnboardingSummarySection data={summary} />
+    </>
+  );
 }
 
 async function StatsGrowthSection() {
@@ -497,15 +516,9 @@ export default async function Home() {
   );
 
   const onboardingContent = (
-    <>
-      <Suspense fallback={<LoadingState />}>
-        <OnboardingWeekly />
-      </Suspense>
-
-      <Suspense fallback={<LoadingState />}>
-        <OnboardingSummary />
-      </Suspense>
-    </>
+    <Suspense fallback={<LoadingState />}>
+      <OnboardingContent />
+    </Suspense>
   );
 
   const ufoContent = (
