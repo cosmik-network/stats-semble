@@ -16,6 +16,7 @@ import { ProductAnalyticsClient } from "@/features/product-analytics/lib/dal";
 import { WacSection } from "@/features/product-analytics/components/WacSection";
 import { FunnelSection } from "@/features/product-analytics/components/FunnelSection";
 import { OnboardingAnalyticsClient } from "@/features/onboarding-analytics/lib/dal";
+import { currentWeekStart } from "@/features/onboarding-analytics/lib/shared";
 import { OnboardingWeeklySection } from "@/features/onboarding-analytics/components/OnboardingWeeklySection";
 import { OnboardingSummarySection } from "@/features/onboarding-analytics/components/OnboardingSummarySection";
 import { PasswordGate } from "@/features/onboarding-analytics/components/PasswordGate";
@@ -153,9 +154,10 @@ async function getOnboardingWeeklyStats() {
   "use cache";
   cacheLife("minutes");
   cacheTag("dashboard");
-  // No endWeek => most recent completed week; the client navigates from there.
+  // Explicit endWeek => the current (still-incomplete) week; the client
+  // navigates back from there.
   const client = new OnboardingAnalyticsClient();
-  return client.getWeekly();
+  return client.getWeekly(currentWeekStart());
 }
 
 async function getOnboardingSummaryStats() {

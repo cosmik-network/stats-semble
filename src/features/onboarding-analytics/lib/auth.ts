@@ -17,10 +17,13 @@ function password(): string | undefined {
  * "this browser knew the password at some point".
  */
 function expectedToken(secret: string): string {
-  return createHmac("sha256", secret).update("onboarding-access-v1").digest("hex");
+  return createHmac("sha256", secret)
+    .update("onboarding-access-v1")
+    .digest("hex");
 }
 
 function safeEqual(a: string, b: string): boolean {
+  console.log("safeEqual", a, b);
   const bufA = Buffer.from(a);
   const bufB = Buffer.from(b);
   if (bufA.length !== bufB.length) return false;

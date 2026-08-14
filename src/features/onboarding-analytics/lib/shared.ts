@@ -411,6 +411,15 @@ export const FUNNEL_STEPS: FunnelStep[] = [
 
 // --- week helpers ----------------------------------------------------------
 
+/** Monday (UTC) of the current, still-incomplete week as an ISO date string. */
+export function currentWeekStart(now: Date = new Date()): string {
+  const d = new Date(now);
+  // getUTCDay: Sun=0 … Sat=6; shift back to the most recent Monday.
+  const daysSinceMonday = (d.getUTCDay() + 6) % 7;
+  d.setUTCDate(d.getUTCDate() - daysSinceMonday);
+  return d.toISOString().slice(0, 10);
+}
+
 /** Shift an ISO week-start by N weeks (UTC) and return an ISO date string. */
 export function shiftWeek(iso: string, deltaWeeks: number): string {
   const d = new Date(iso);

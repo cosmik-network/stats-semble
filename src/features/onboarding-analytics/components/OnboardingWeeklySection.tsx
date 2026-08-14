@@ -26,7 +26,7 @@ export function OnboardingWeeklySection({ initialData, headerAction }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  // The most recent completed week is what the server returned initially — it
+  // The current (incomplete) week is what the server returned initially — it
   // bounds forward navigation.
   const [latestWeek] = useState(initialData.cohortWeekStart);
   const atLatest = data.cohortWeekStart >= latestWeek;
