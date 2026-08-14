@@ -1,0 +1,197 @@
+/* ==== Password gate ==== */
+.gateForm {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 320px;
+}
+.gateLabel {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-mid);
+}
+.gateRow {
+    display: flex;
+    gap: 6px;
+}
+.gateInput {
+    flex: 1;
+    min-width: 0;
+    font: inherit;
+    font-size: 12px;
+    color: var(--text-hi);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 5px 8px;
+}
+.gateInput:focus {
+    outline: none;
+    border-color: var(--border-2);
+}
+.gateButton {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-mid);
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+}
+.gateButton:hover:not(:disabled) {
+    color: var(--text-hi);
+    border-color: var(--border-2);
+}
+.gateButton:disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+.gateError {
+    font-size: 11px;
+    color: #ef5b6b;
+}
+.lockButton {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    padding: 2px 7px;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+}
+.lockButton:hover {
+    color: var(--text-hi);
+    border-color: var(--border-2);
+}
+
+/* Expandable field row: a metric row that toggles a user list open. */
+.rowButton {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 12px;
+    padding: 4px 0;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+    font: inherit;
+    font-size: 12px;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+}
+.rowButton:disabled {
+    cursor: default;
+}
+.rowButton:hover:not(:disabled) .rowLabel,
+.rowButton:focus-visible .rowLabel {
+    color: var(--text-hi);
+}
+.rowLeft {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+}
+.rowLabel {
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.rowValue {
+    color: var(--text-hi);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.caret {
+    display: inline-block;
+    width: 9px;
+    font-size: 9px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+}
+.caretOpen {
+    color: var(--text-mid);
+}
+
+/* Nested value row inside an expanded field (e.g. one topic under "topics") */
+.nestedRow {
+    font-size: 11px;
+}
+.nestedRow .rowLabel {
+    color: var(--text-mid);
+}
+.nestedRow:last-child {
+    border-bottom: none;
+}
+.nestedPanel {
+    padding: 4px 0 6px 17px;
+    border-bottom: none;
+}
+
+/* Expanded panel */
+.panel {
+    padding: 6px 0 8px 17px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.panelEmpty {
+    font-size: 11px;
+    color: var(--text-dim);
+}
+.panelHeading {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-mid);
+}
+
+/* User list */
+.userList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.user {
+    font-size: 11px;
+    color: var(--text-mid);
+    white-space: nowrap;
+}
+.userHandle {
+    color: var(--text-hi);
+}
+
+/* Per-value breakdown inside the panel */
+.breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.breakdownRow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 11px;
+}
+.breakdownLabel {
+    color: var(--text-mid);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.breakdownCount {
+    color: var(--text-hi);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+}

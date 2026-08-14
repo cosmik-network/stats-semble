@@ -15,6 +15,16 @@ import { StatsClient } from "@/features/stats/lib/stats-dal";
 import { ProductAnalyticsClient } from "@/features/product-analytics/lib/dal";
 import { WacSection } from "@/features/product-analytics/components/WacSection";
 import { FunnelSection } from "@/features/product-analytics/components/FunnelSection";
+import { OnboardingAnalyticsClient } from "@/features/onboarding-analytics/lib/dal";
+import { currentWeekStart } from "@/features/onboarding-analytics/lib/shared";
+import { OnboardingWeeklySection } from "@/features/onboarding-analytics/components/OnboardingWeeklySection";
+import { OnboardingSummarySection } from "@/features/onboarding-analytics/components/OnboardingSummarySection";
+import { PasswordGate } from "@/features/onboarding-analytics/components/PasswordGate";
+import { LockButton } from "@/features/onboarding-analytics/components/LockButton";
+import {
+  hasOnboardingAccess,
+  isGateDisabled,
+} from "@/features/onboarding-analytics/lib/auth";
 import {
   CATEGORY_COLORS,
   Card,
@@ -138,6 +148,24 @@ async function getActivationFunnelStats() {
   cacheTag("dashboard");
   const client = new ProductAnalyticsClient();
   return client.getActivationFunnel(undefined, 0);
+}
+
+async function getOnboardingWeeklyStats() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("dashboard");
+  // Explicit endWeek => the current (still-incomplete) week; the client
+  // navigates back from there.
+  const client = new OnboardingAnalyticsClient();
+  return client.getWeekly(currentWeekStart());
+}
+
+async function getOnboardingSummaryStats() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("dashboard");
+  const client = new OnboardingAnalyticsClient();
+  return client.getSummary();
 }
 
 async function getFetchedAt() {
@@ -401,6 +429,29 @@ async function ProductFunnelSection() {
   return <FunnelSection data={funnelData} />;
 }
 
+// Password-gated. The access check runs BEFORE any fetch, so onboarding data
+// never reaches the client payload for visitors who haven't unlocked the tab.
+async function OnboardingContent() {
+  if (!(await hasOnboardingAccess())) {
+    return <PasswordGate />;
+  }
+
+  const [weekly, summary] = await Promise.all([
+    getOnboardingWeeklyStats(),
+    getOnboardingSummaryStats(),
+  ]);
+
+  return (
+    <>
+      <OnboardingWeeklySection
+        initialData={weekly}
+        headerAction={isGateDisabled() ? undefined : <LockButton />}
+      />
+      <OnboardingSummarySection data={summary} />
+    </>
+  );
+}
+
 async function StatsGrowthSection() {
   const growthData = await getGrowthStats();
   return <GrowthChart data={growthData} />;
@@ -466,6 +517,12 @@ export default async function Home() {
     </>
   );
 
+  const onboardingContent = (
+    <Suspense fallback={<LoadingState />}>
+      <OnboardingContent />
+    </Suspense>
+  );
+
   const ufoContent = (
     <>
       <Suspense fallback={<LoadingState />}>
@@ -514,6 +571,7 @@ export default async function Home() {
     <main className="term-root">
       <DashboardTabs
         productContent={productContent}
+        onboardingContent={onboardingContent}
         ufoContent={ufoContent}
         dbContent={dbContent}
         lastUpdated={lastUpdated}
