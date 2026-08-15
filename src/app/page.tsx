@@ -15,6 +15,8 @@ import { StatsClient } from "@/features/stats/lib/stats-dal";
 import { ProductAnalyticsClient } from "@/features/product-analytics/lib/dal";
 import { WacSection } from "@/features/product-analytics/components/WacSection";
 import { FunnelSection } from "@/features/product-analytics/components/FunnelSection";
+import { ApiAnalyticsClient } from "@/features/api-analytics/lib/dal";
+import { ApiUsageSection } from "@/features/api-analytics/components/ApiUsageSection";
 import { OnboardingAnalyticsClient } from "@/features/onboarding-analytics/lib/dal";
 import { currentWeekStart } from "@/features/onboarding-analytics/lib/shared";
 import { OnboardingWeeklySection } from "@/features/onboarding-analytics/components/OnboardingWeeklySection";
@@ -148,6 +150,16 @@ async function getActivationFunnelStats() {
   cacheTag("dashboard");
   const client = new ProductAnalyticsClient();
   return client.getActivationFunnel(undefined, 0);
+}
+
+async function getApiUsageStats() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("dashboard");
+  // endWeek => the current (still-incomplete) week; weeks=0 => all-time, so
+  // the client can navigate every week from one payload.
+  const client = new ApiAnalyticsClient();
+  return client.getApiUsage(currentWeekStart(), 0);
 }
 
 async function getOnboardingWeeklyStats() {
@@ -452,6 +464,11 @@ async function OnboardingContent() {
   );
 }
 
+async function ApiUsageContent() {
+  const data = await getApiUsageStats();
+  return <ApiUsageSection data={data} />;
+}
+
 async function StatsGrowthSection() {
   const growthData = await getGrowthStats();
   return <GrowthChart data={growthData} />;
@@ -523,6 +540,12 @@ export default async function Home() {
     </Suspense>
   );
 
+  const apiContent = (
+    <Suspense fallback={<LoadingState />}>
+      <ApiUsageContent />
+    </Suspense>
+  );
+
   const ufoContent = (
     <>
       <Suspense fallback={<LoadingState />}>
@@ -572,6 +595,7 @@ export default async function Home() {
       <DashboardTabs
         productContent={productContent}
         onboardingContent={onboardingContent}
+        apiContent={apiContent}
         ufoContent={ufoContent}
         dbContent={dbContent}
         lastUpdated={lastUpdated}

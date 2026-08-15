@@ -9,6 +9,7 @@ interface Props {
   initialTab?: HeaderTab;
   productContent: ReactNode;
   onboardingContent: ReactNode;
+  apiContent: ReactNode;
   ufoContent: ReactNode;
   dbContent: ReactNode;
   lastUpdated: string;
@@ -18,6 +19,7 @@ export default function DashboardTabs({
   initialTab = "product",
   productContent,
   onboardingContent,
+  apiContent,
   ufoContent,
   dbContent,
   lastUpdated,
@@ -27,6 +29,7 @@ export default function DashboardTabs({
   const content: Record<HeaderTab, ReactNode> = {
     product: productContent,
     onboarding: onboardingContent,
+    api: apiContent,
     ufo: ufoContent,
     db: dbContent,
   };
