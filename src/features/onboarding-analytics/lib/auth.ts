@@ -23,7 +23,6 @@ function expectedToken(secret: string): string {
 }
 
 function safeEqual(a: string, b: string): boolean {
-  console.log("safeEqual", a, b);
   const bufA = Buffer.from(a);
   const bufB = Buffer.from(b);
   if (bufA.length !== bufB.length) return false;
