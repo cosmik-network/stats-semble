@@ -170,6 +170,15 @@
 .userHandle {
     color: var(--text-hi);
 }
+a.userHandle {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+a.userHandle:hover,
+a.userHandle:focus-visible {
+    color: var(--text-hi);
+    text-decoration-thickness: 2px;
+}
 
 /* Per-value breakdown inside the panel */
 .breakdown {

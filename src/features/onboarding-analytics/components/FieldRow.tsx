@@ -15,9 +15,19 @@ function UserList({ users }: { users: OnboardingMinimalProfileDTO[] }) {
     <ul className={styles.userList}>
       {users.map((u) => (
         <li key={u.id} className={styles.user}>
-          <span className={styles.userHandle}>
-            {u.handle ? `@${u.handle}` : u.name || u.id}
-          </span>
+          {u.handle ? (
+            <a
+              className={styles.userHandle}
+              href={`https://semble.so/profile/${u.handle}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              @{u.handle}
+            </a>
+          ) : (
+            // No handle resolved, so there is no profile to link to.
+            <span className={styles.userHandle}>{u.name || u.id}</span>
+          )}
         </li>
       ))}
     </ul>
