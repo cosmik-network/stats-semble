@@ -12,7 +12,27 @@ export const PA_COLORS = {
   collectionAdd: "#a07bf0",
   connection: "#3ec97a",
   othersCollectionAdd: "#f0b65b",
+  // Retention metric cuts
+  retentionActive: "#5b8def",
+  retentionCurating: "#3ec97a",
 } as const;
+
+// Fixed segment -> color assignment (never cycled; unknown segments fall back).
+export const SEGMENT_COLORS: Record<string, string> = {
+  COMPLETED: "#3ec97a",
+  SKIPPED: "#f0b65b",
+  IN_PROGRESS: "#a07bf0",
+  NOT_STARTED: "#5b8def",
+  NONE: "#8a8f98",
+  notified: "#3ec97a",
+  not_notified: "#f0b65b",
+};
+
+export const SEGMENT_FALLBACK_COLOR = "#ef5b6b";
+
+export function segmentColor(segment: string): string {
+  return SEGMENT_COLORS[segment] ?? SEGMENT_FALLBACK_COLOR;
+}
 
 export interface Delta {
   abs: number; // now - prev

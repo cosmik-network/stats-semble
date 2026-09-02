@@ -27,3 +27,43 @@ export interface ActivationFunnelStatsDTO {
   periodStart: string; // ISO cohort-week-start of the first data point
   periodEnd: string; // ISO cohort-week-start of the last data point
 }
+
+export interface RetentionWeekPoint {
+  weekOffset: number; // 1..N completed weeks since the cohort week (0 omitted)
+  activeUsers: number; // distinct cohort users with ANY activity that week
+  curatingUsers: number; // distinct cohort users with collection-add OR connection (WAC definition)
+}
+
+export interface RetentionDataPoint {
+  cohortWeekStart: string; // ISO date of the signup week's Monday
+  cohortSize: number; // signups that week (minus internal accounts)
+  weeks: RetentionWeekPoint[]; // dense, weekOffset 1..N
+}
+
+export interface RetentionStatsDTO {
+  dataPoints: RetentionDataPoint[]; // chronological, oldest -> newest, gap-filled
+  periodStart: string;
+  periodEnd: string;
+}
+
+export type RetentionSegmentBy = "onboardingState" | "notifiedFirstWeek";
+
+export interface RetentionSegmentWeekPoint {
+  weekOffset: number;
+  eligibleUsers: number; // denominator for this offset (right-censoring aware)
+  activeUsers: number;
+  curatingUsers: number;
+}
+
+export interface RetentionSegmentDataPoint {
+  segment: string;
+  userCount: number; // segment users in the pooled cohort range
+  weeks: RetentionSegmentWeekPoint[]; // dense, weekOffset 1..N
+}
+
+export interface RetentionSegmentsStatsDTO {
+  segmentBy: string;
+  dataPoints: RetentionSegmentDataPoint[]; // sorted by userCount desc, segment asc
+  periodStart: string; // pooled cohort range
+  periodEnd: string;
+}

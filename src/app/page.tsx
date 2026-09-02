@@ -15,6 +15,8 @@ import { StatsClient } from "@/features/stats/lib/stats-dal";
 import { ProductAnalyticsClient } from "@/features/product-analytics/lib/dal";
 import { WacSection } from "@/features/product-analytics/components/WacSection";
 import { FunnelSection } from "@/features/product-analytics/components/FunnelSection";
+import { RetentionSection } from "@/features/product-analytics/components/RetentionSection";
+import { RetentionSegmentsSection } from "@/features/product-analytics/components/RetentionSegmentsSection";
 import { ApiAnalyticsClient } from "@/features/api-analytics/lib/dal";
 import { ApiUsageSection } from "@/features/api-analytics/components/ApiUsageSection";
 import { OnboardingAnalyticsClient } from "@/features/onboarding-analytics/lib/dal";
@@ -150,6 +152,27 @@ async function getActivationFunnelStats() {
   cacheTag("dashboard");
   const client = new ProductAnalyticsClient();
   return client.getActivationFunnel(undefined, 0);
+}
+
+async function getRetentionStats() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("dashboard");
+  const client = new ProductAnalyticsClient();
+  return client.getRetention(undefined, 0);
+}
+
+async function getRetentionSegmentsStats() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("dashboard");
+  // Both segmentBy dimensions up front; the client toggles between them.
+  const client = new ProductAnalyticsClient();
+  const [onboarding, notified] = await Promise.all([
+    client.getRetentionSegments("onboardingState", undefined, 0),
+    client.getRetentionSegments("notifiedFirstWeek", undefined, 0),
+  ]);
+  return { onboarding, notified };
 }
 
 async function getApiUsageStats() {
@@ -441,6 +464,18 @@ async function ProductFunnelSection() {
   return <FunnelSection data={funnelData} />;
 }
 
+async function ProductRetentionSection() {
+  const retentionData = await getRetentionStats();
+  return <RetentionSection data={retentionData} />;
+}
+
+async function ProductRetentionSegmentsSection() {
+  const { onboarding, notified } = await getRetentionSegmentsStats();
+  return (
+    <RetentionSegmentsSection onboarding={onboarding} notified={notified} />
+  );
+}
+
 // Password-gated. The access check runs BEFORE any fetch, so onboarding data
 // never reaches the client payload for visitors who haven't unlocked the tab.
 async function OnboardingContent() {
@@ -530,6 +565,14 @@ export default async function Home() {
 
       <Suspense fallback={<LoadingState />}>
         <ProductFunnelSection />
+      </Suspense>
+
+      <Suspense fallback={<LoadingState />}>
+        <ProductRetentionSection />
+      </Suspense>
+
+      <Suspense fallback={<LoadingState />}>
+        <ProductRetentionSegmentsSection />
       </Suspense>
     </>
   );
